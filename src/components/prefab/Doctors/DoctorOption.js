@@ -1,28 +1,34 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Avater from '../../primitive/Avater/Avater';
 import Tag from '../../primitive/Tag/Tag';
 import {button, text} from '../../../config/styles/color';
 // import Button from '../../primitive/Button/Button';
 
-
-
-const DoctorOption = (props) => {
-    useEffect(() => {
-        // console.log(props)
-    })
+const DoctorOption = props => {
+  useEffect(() => {
+    // console.log(props)
+  });
   return (
     <View style={doctor.samll_card}>
       <View>
         <Avater imageLink={null} isActive={props.isActive} />
       </View>
       <View style={doctor.body}>
-        <View>
-          <Text style={doctor.heading}>{props.name}</Text>
-          <Tag tag={props.tag} />
+        <View style={{ display: 'flex', flex:1}}>
+          <Text style={doctor.heading}>{props.name.toString().length > 15 ? props.name.toString().substring(0,17) + '...' : props.name.toString()}</Text>
+          <View style={{ display: "flex", flexDirection: 'row'}}>
+            <Tag tag={props.tag} />
+          </View>
         </View>
         <View>
-          <TouchableOpacity onPress={() => props.nav.navigation.navigate('doctorProfileScreen', {'name': 'Docs'})} style={doctor.button}>
+          <TouchableOpacity
+            onPress={() =>
+              props.nav.navigation.navigate('doctorProfileScreen', {
+                name: 'Docs',
+              })
+            }
+            style={doctor.button}>
             <Text style={doctor.text}>{'Visit'}</Text>
           </TouchableOpacity>
         </View>
@@ -40,10 +46,10 @@ const doctor = StyleSheet.create({
   heading: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: text.color_3
+    color: text.color_3,
   },
   body: {
-      marginLeft: 10,
+    marginLeft: 10,
     display: 'flex',
     flex: 1,
     flexDirection: 'row',

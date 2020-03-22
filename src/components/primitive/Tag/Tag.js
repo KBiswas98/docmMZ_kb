@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native'
 const Tag = (props) => {
     return (
         <View style={tag.container}>
-            <Text style={tag.text}>{props.tag}</Text>
+            <Text style={tag.text}>{props.tag.toString().split(' ')[0]}</Text>
         </View>
     )
 }
@@ -17,10 +17,12 @@ const tag = StyleSheet.create({
         paddingBottom: 5,
         backgroundColor: '#F6F6F4',
         borderRadius: 5,
-        margin: 5
+        margin: 5,
+        // flex: 1,
+        width: 'auto'
     },
     text: {
-        color: '#B1B4B9'
+        color: '#B1B4B9',
     }
 })
 
