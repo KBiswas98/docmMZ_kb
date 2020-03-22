@@ -12,62 +12,82 @@ import {text} from '../../config/styles/color';
 import Catagory from '../../components/prefab/Catagory/Catagory';
 import Icon from 'react-native-vector-icons/Feather';
 import TButton from '../../components/prefab/Buttons/TButton';
-import Avater from '../../components/primitive/Avater/Avater';
 import DoctorOption from '../../components/prefab/Doctors/DoctorOption';
+import axios from 'axios';
+import {Host} from '../../config/settings/Connection';
 
 const _TopDoctors = [
   {
     name: 'Kamalesh Biswas',
     tag: 'Dentists',
+    isActive: true,
   },
   {
     name: 'Kamalesh Biswas',
     tag: 'Dentists1',
+    isActive: false,
   },
   {
     name: 'Kamalesh Biswas',
     tag: 'Dentists2',
+    isActive: true,
   },
   {
     name: 'Kamalesh Biswas',
     tag: 'Dentists3',
+    isActive: true,
   },
   {
     name: 'Kamalesh Biswas',
     tag: 'Dentists4',
+    isActive: true,
   },
 ];
-
-
 
 const _RecentlyViewed = [
   {
     name: 'Kamalesh Biswas',
     tag: 'Dentists',
+    isActive: true,
   },
   {
     name: 'Kamalesh Biswas',
     tag: 'Dentists1',
+    isActive: false,
   },
   {
     name: 'Kamalesh Biswas',
     tag: 'Dentists2',
+    isActive: true,
   },
   {
     name: 'Kamalesh Biswas',
     tag: 'Dentists3',
+    isActive: false,
   },
   {
     name: 'Kamalesh Biswas',
     tag: 'Dentists4',
+    isActive: true,
   },
 ];
 
-
-const Home = () => {
+const Home = props => {
   const [search, setSearch] = useState('');
+  const [data, setData] = useState(null)
   useEffect(() => {
-    // console.log('works');
+    // console.log(props);
+    // axios
+    //   .post(`${Host}/doctors/search`)
+    //   .then(result => {
+    //     if (result.status) {
+    //       console.log((result.data.data));
+    //       setData(result.data.data)
+    //     }
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //   });
   }, []);
 
   const handelSearchInput = _text => {
@@ -112,8 +132,13 @@ const Home = () => {
         icon={'search'}
       />
       <View>
-        <Section name={'Top Doctors'} data={_TopDoctors} />
-        <Section name={'Recently Viewed'} data={_RecentlyViewed} noViewAll = {true}/>
+        <Section name={'Top Doctors'} data={_TopDoctors} nav={props} />
+        <Section
+          name={'Recently Viewed'}
+          data={_RecentlyViewed}
+          noViewAll={true}
+          nav={props}
+        />
       </View>
     </ScrollView>
   );
@@ -185,7 +210,7 @@ const SearchBar = props => {
     <View style={search.container}>
       <Icon
         name="search"
-        color="#ccc"
+        color="#fff"
         size={25}
         style={search.placeholder_icon}
       />
@@ -195,7 +220,7 @@ const SearchBar = props => {
         placeholder="Search by on conditions, symptoms..."
       />
       <TouchableOpacity style={search.button} onPress={props.onSubmit}>
-        <Text style={{color: '#fff'}}>Show result</Text>
+        <Text style={{color: '#fff', fontWeight: 'bold'}}>Show result</Text>
       </TouchableOpacity>
     </View>
   );
@@ -214,10 +239,13 @@ const search = StyleSheet.create({
   input: {
     height: 40,
     borderColor: 'gray',
-    borderWidth: 1,
+    // borderWidth: 1,
+    color: '#fff',
     borderRadius: 5,
     width: '100%',
     paddingLeft: 40,
+    backgroundColor: '#A16FC4'
+
   },
   button: {
     color: '#fff',
@@ -227,7 +255,9 @@ const search = StyleSheet.create({
     position: 'absolute',
     left: 38,
     top: 38,
-    opacity: 0.5,
+    opacity: 1,
+    zIndex: 10,
+    opacity: 0.5
   },
 });
 
@@ -240,12 +270,24 @@ const Section = props => {
     <View style={section.container}>
       <View style={section.header}>
         <Text style={section.heading}>{props.name}</Text>
-        <TButton title={'view all'} onClick={null} />
+        <TButton
+          title={'view all'}
+          onClick={() =>
+            props.nav.navigation.navigate('allDoctorScreen', {name: props.name})
+          }
+        />
       </View>
       <View style={section.doc_container}>
         {props.data.map((row, index) => {
           if (index >= 3) return;
-          return <DoctorOption name={row.name} tag={row.tag} key={index} />;
+          return (
+            <DoctorOption
+              name={row.name}
+              tag={row.tag}
+              key={index}
+              isActive={row.isActive}
+            />
+          );
         })}
       </View>
     </View>

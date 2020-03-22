@@ -4,13 +4,13 @@ import {View, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {createBottomTabNavigator} from 'react-navigation';
 
-import Home from '../../screens/home/Home';
+import HomePageNavigation from './HomePageNavigation'
 import Setting from '../../screens/setting/Setting';
 
 export default createBottomTabNavigator(
   {
     Home: {
-      screen: Home,
+      screen: HomePageNavigation,
       navigationOptions: {
         tabBarLabel: 'Home',
         tabBarIcon: ({tintColor}) => (
