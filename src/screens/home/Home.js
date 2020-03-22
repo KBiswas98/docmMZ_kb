@@ -74,21 +74,29 @@ const _RecentlyViewed = [
 
 const Home = props => {
   const [search, setSearch] = useState('');
-  const [data, setData] = useState(null)
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     // console.log(props);
-    // axios
-    //   .post(`${Host}/doctors/search`)
-    //   .then(result => {
-    //     if (result.status) {
-    //       console.log((result.data.data));
-    //       setData(result.data.data)
-    //     }
-    //   })
-    //   .catch(err => {
-    //     console.log(err);
-    //   });
-  }, []);
+
+    const _getData = () => {
+      axios
+        .post(`${Host}/doctors/search`)
+        .then(result => {
+          if (result.status) {
+            console.log(result.data.data);
+            setData(result.data.data);
+            setLoading(false);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    };
+
+    _getData();
+  }, [loading]);
 
   const handelSearchInput = _text => {
     setSearch(_text);
@@ -96,11 +104,12 @@ const Home = props => {
 
   const handelSearchSubmit = () => {
     console.log(search);
-    props.navigation.navigate('searchScreen', {mySearch: search})
+    props.navigation.navigate('searchScreen', {mySearch: search});
   };
 
-
-  return (
+  return loading ? (
+    <Text>Loading..</Text>
+  ) : (
     <ScrollView showsVerticalScrollIndicator={false}>
       <TopNavBar />
       <View>
@@ -134,10 +143,10 @@ const Home = props => {
         icon={'search'}
       />
       <View>
-        <Section name={'Top Doctors'} data={_TopDoctors} nav={props} />
+        <Section name={'Top Doctors'} data={data} nav={props} />
         <Section
           name={'Recently Viewed'}
-          data={_RecentlyViewed}
+          data={data}
           noViewAll={true}
           nav={props}
         />
@@ -246,8 +255,7 @@ const search = StyleSheet.create({
     borderRadius: 5,
     width: '100%',
     paddingLeft: 40,
-    backgroundColor: '#A16FC4'
-
+    backgroundColor: '#A16FC4',
   },
   button: {
     color: '#fff',
@@ -259,7 +267,7 @@ const search = StyleSheet.create({
     top: 38,
     opacity: 1,
     zIndex: 10,
-    opacity: 0.5
+    opacity: 0.5,
   },
 });
 
@@ -280,14 +288,16 @@ const Section = props => {
         />
       </View>
       <View style={section.doc_container}>
-        {props.data.map((row, index) => {
+        {props.data.map((item, index) => {
           if (index >= 3) return;
           return (
             <DoctorOption
-              name={row.name}
-              tag={row.tag}
+              name={item.basic.name}
+              tag={item.basic.first_name}
               key={index}
-              isActive={row.isActive}
+              isActive={item.isActive}
+              nav={props.nav}
+              id={item._id}
             />
           );
         })}

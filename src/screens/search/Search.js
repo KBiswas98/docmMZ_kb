@@ -7,7 +7,7 @@ import {
   Image,
   TextInput,
   SafeAreaView,
-  FlatList
+  FlatList,
 } from 'react-native';
 import {text} from '../../config/styles/color';
 import Icon from 'react-native-vector-icons/Feather';
@@ -20,10 +20,17 @@ const Search = props => {
   const [filterData, setFilterData] = useState();
   const [_search, _setSearch] = useState('');
 
-  const _handelInputAndHandelFilter = (text) => {
-    _setSearch(text)
-    setFilterData(data.filter( item => item.basic.name.toString().toLowerCase().includes(_search.toString().toLowerCase())))
-  }
+  const _handelInputAndHandelFilter = text => {
+    _setSearch(text);
+    setFilterData(
+      data.filter(item =>
+        item.basic.name
+          .toString()
+          .toLowerCase()
+          .includes(_search.toString().toLowerCase()),
+      ),
+    );
+  };
 
   useEffect(() => {
     _setSearch(props.navigation.state.params.mySearch);
@@ -41,7 +48,6 @@ const Search = props => {
       });
   }, []);
 
-  
   return (
     <View>
       <TopNavBar nav={props} heading={props.heading} />
@@ -70,6 +76,7 @@ const Search = props => {
               key={index}
               isActive={item.isActive}
               nav={props}
+              id={item._id}
             />
           )}
           keyExtractor={item => item._id}
