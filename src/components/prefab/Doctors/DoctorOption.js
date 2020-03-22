@@ -8,11 +8,13 @@ import {button, text} from '../../../config/styles/color';
 
 
 const DoctorOption = (props) => {
-    
+    useEffect(() => {
+        // console.log(props)
+    })
   return (
     <View style={doctor.samll_card}>
       <View>
-        <Avater imageLink={null} isActive={true} />
+        <Avater imageLink={null} isActive={props.isActive} />
       </View>
       <View style={doctor.body}>
         <View>
@@ -20,7 +22,7 @@ const DoctorOption = (props) => {
           <Tag tag={props.tag} />
         </View>
         <View>
-          <TouchableOpacity onPress={null} style={doctor.button}>
+          <TouchableOpacity onPress={() => props.nav.navigation.navigate('doctorProfileScreen', {'name': 'Docs'})} style={doctor.button}>
             <Text style={doctor.text}>{'Visit'}</Text>
           </TouchableOpacity>
         </View>
