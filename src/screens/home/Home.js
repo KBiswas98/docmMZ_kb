@@ -96,7 +96,9 @@ const Home = props => {
 
   const handelSearchSubmit = () => {
     console.log(search);
+    props.navigation.navigate('searchScreen', {mySearch: search})
   };
+
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
