@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,8 @@ import {
 import DoctorOption from '../../components/prefab/Doctors/DoctorOption';
 import Icon from 'react-native-vector-icons/Feather';
 import {text} from '../../config/styles/color';
+import axios from 'axios';
+import {Host} from '../../config/settings/Connection';
 
 const DATA = [
   {
@@ -61,19 +63,39 @@ const DATA = [
 ];
 
 const AllDoctor = props => {
+  const [data, setData] = useState();
+  const [filterData, setFilterData] = useState();
+  const [_search, _setSearch] = useState('');
+
+  useEffect(() => {
+    axios
+      .post(`${Host}/doctors/search`)
+      .then(result => {
+        if (result.status) {
+          console.log(result.data.data);
+          setData(result.data.data);
+          setFilterData(result.data.data);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <SafeAreaView style={doctor.container}>
       <TopNavBar nav={props} heading={props.heading} />
       <FlatList
-        data={DATA}
+        data={filterData}
         showsVerticalScrollIndicator={false}
         renderItem={({item, index}) => (
           <DoctorOption
-            name={item.name}
-            tag={item.tag}
+            name={item.basic.name}
+            tag={item.basic.first_name}
             key={index}
             isActive={item.isActive}
             nav={props}
+            id={item._id}
           />
         )}
         // keyExtractor={item => item.id}
@@ -89,7 +111,6 @@ const doctor = StyleSheet.create({
 });
 
 const TopNavBar = props => {
-
   return (
     <View style={topNavBar_styles.top_bar}>
       <Icon

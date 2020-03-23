@@ -25,7 +25,9 @@ const DoctorOption = props => {
           <TouchableOpacity
             onPress={() =>
               props.nav.navigation.navigate('doctorProfileScreen', {
-                name: 'Docs',
+                name: props.name,
+                id: props.id,
+                tag: props.tag
               })
             }
             style={doctor.button}>
