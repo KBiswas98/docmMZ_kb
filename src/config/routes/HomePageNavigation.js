@@ -6,6 +6,8 @@ import Home from '../../screens/home/Home';
 import AllDoctor from '../../screens/allDoctors/AllDoctor';
 import Profile from '../../screens/doctorProfile/DoctorProfile';
 import Search from '../../screens/search/Search';
+import Login from '../../screens/Login/Login';
+import SignUp from '../../screens/SignUp/SignUp';
 
 const stackNav = createStackNavigator(
   {
@@ -24,6 +26,8 @@ const HomePageNavigation = createSwitchNavigator(
     allDoctorScreen: AllDoctor,
     doctorProfileScreen: Profile,
     searchScreen: Search,
+    Login: Login,
+    SignUp: SignUp,
   },
   {
     initialRouteName: 'homeScreen',
