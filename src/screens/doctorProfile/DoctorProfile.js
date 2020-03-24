@@ -320,7 +320,8 @@ const DoctorsActivity = props => {
     <View style={DoctorsActivityStyle.container}>
       <View style={DoctorsActivityStyle.row_Box}>
         <TouchableOpacity
-          style={[DoctorsActivityStyle.box, {backgroundColor: '#02b6ee'}]}>
+          style={[DoctorsActivityStyle.box, {backgroundColor: '#02b6ee'}]}
+          onPress={() => props.nav.navigation.navigate('scheduleScreen')}>
           <Icon name="file-document" size={22} color={'#fff'} />
           <Text style={[DoctorsActivityStyle.text]}>List Of Schedule</Text>
         </TouchableOpacity>

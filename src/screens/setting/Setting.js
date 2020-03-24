@@ -1,10 +1,16 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
+import NavigationActions from 'react-navigation/src/NavigationActions'
 
-const Setting = () => {
+const Setting = (props) => {
     return (
         <View>
-            <Text>Setting</Text>
+            <TouchableOpacity onPress={() => props.navigation.navigate('Auth')} style={{backgroundColor: 'pink', padding: 5, margin: 5}}>
+                <Text>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => props.navigation.navigate('Auth', {}, NavigationActions.navigate({routeName:'SignUp'}))} style={{backgroundColor: 'pink', padding: 5, margin: 5}}>
+                <Text>Signup</Text>
+            </TouchableOpacity>
         </View>
     )
 }

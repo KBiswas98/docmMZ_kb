@@ -4,8 +4,9 @@ import {View, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {createBottomTabNavigator} from 'react-navigation';
 
-import HomePageNavigation from './HomePageNavigation'
-import Setting from '../../screens/setting/Setting';
+import HomePageNavigation from './HomePageNavigation';
+import SettingNavigation from './SettingNavigation';
+import NavigationActions from 'react-navigation/src/NavigationActions';
 
 export default createBottomTabNavigator(
   {
@@ -19,7 +20,7 @@ export default createBottomTabNavigator(
       },
     },
     Setting: {
-      screen: Setting,
+      screen: SettingNavigation,
       navigationOptions: {
         tabBarLabel: 'Setting',
         tabBarIcon: ({tintColor}) => (
@@ -31,5 +32,14 @@ export default createBottomTabNavigator(
   {
     showIcon: true,
     initialRouteName: 'Home',
+    navigationOptions: ({navigation}) => ({
+      tabBarOnPress: () => {
+        console.log(navigation.state.routeName);
+        navigation.navigate(navigation.state.routeName);
+        if(navigation.state.routeName === 'Home') {
+          navigation.navigate('Home', {}, NavigationActions.navigate({ routeName: 'homeScreen'}))
+        }
+      },
+    }),
   },
 );
