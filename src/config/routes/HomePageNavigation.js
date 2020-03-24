@@ -8,10 +8,12 @@ import Profile from '../../screens/doctorProfile/DoctorProfile';
 import Search from '../../screens/search/Search';
 import Login from '../../screens/Login/Login';
 import SignUp from '../../screens/SignUp/SignUp';
+import ForgotPassword from '../../screens/ForgotPassword/ForgotPassword';
+import Otp from '../../screens/Otp/Otp';
 
 const stackNav = createStackNavigator(
   {
-     Search,
+    Search,
   },
   {
     navigationOptions: {
@@ -28,6 +30,8 @@ const HomePageNavigation = createSwitchNavigator(
     searchScreen: Search,
     Login: Login,
     SignUp: SignUp,
+    ForgotPassword: ForgotPassword,
+    otpScreen: Otp,
   },
   {
     initialRouteName: 'homeScreen',
