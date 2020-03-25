@@ -20,12 +20,16 @@ const DoctorProfile = props => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const _getData = () => {
+    const _id = props.navigation.state.params.id
+    console.log(_id)
+    const _getData = (__id) => {
       axios
-        .get(`${Host}/doctors/getdoc/5dad6ba6f4ab551864e63f02`)
+        .get(`${Host}/doctors/getdoc/${__id}`)
         .then(result => {
           if (result.status) {
-            console.log(result);
+            // console.log('-*-*-*-*----------------*********')
+            // console.log(result.data.data.appointments);
+            // console.log('-*-*-*-*----------------*********')
             setData(result.data.data);
             setLoading(false);
           }
@@ -35,7 +39,7 @@ const DoctorProfile = props => {
         });
     };
 
-    _getData();
+    _getData(_id);
   }, [loading]);
 
   return loading ? (
@@ -104,7 +108,7 @@ const topNavBar_styles = StyleSheet.create({
 });
 
 const ProfileBox = props => {
-  console.log(props.data);
+  // console.log(props.data);
   return (
     <View style={ProfileBoxStyle.container}>
       <View style={ProfileBoxStyle.row_Box}>
@@ -316,12 +320,15 @@ const MapPartStyle = StyleSheet.create({
 });
 
 const DoctorsActivity = props => {
+  useEffect(() => {
+    console.log(props.data)
+  })
   return (
     <View style={DoctorsActivityStyle.container}>
       <View style={DoctorsActivityStyle.row_Box}>
         <TouchableOpacity
           style={[DoctorsActivityStyle.box, {backgroundColor: '#02b6ee'}]}
-          onPress={() => props.nav.navigation.navigate('scheduleScreen')}>
+          onPress={() => props.nav.navigation.navigate('scheduleScreen', {schedule: props.data.appointments, id: props.data._id})}>
           <Icon name="file-document" size={22} color={'#fff'} />
           <Text style={[DoctorsActivityStyle.text]}>List Of Schedule</Text>
         </TouchableOpacity>

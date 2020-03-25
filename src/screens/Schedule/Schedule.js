@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   ScrollView,
 } from 'react-native';
 import {text} from '../../config/styles/color';
@@ -12,6 +11,23 @@ import Icon from 'react-native-vector-icons/Feather';
 import Icons from 'react-native-vector-icons/Fontisto';
 import axios from 'axios';
 import {Host} from '../../config/settings/Connection';
+
+const __getScheduleOfADate = (date /* iso format*/, allSchedule) => {
+  let dailySchedule = [];
+  allSchedule.map(item => {
+    if (item.bookedFor.split('T')[0].localeCompare(date.split('T')[0]) === 0) {
+      console.log(item.bookedFor);
+      dailySchedule.push(item);
+    }
+  });
+
+  return dailySchedule;
+};
+
+const __getTimgeFromIso = isoTime => {
+  let t = new Date(isoTime);
+  return t.getUTCHours() + ':' + t.getUTCMinutes();
+};
 
 const Schedule = props => {
   const [data, setData] = useState();
@@ -28,15 +44,89 @@ const Schedule = props => {
     setBook({date: date, time: time});
   };
 
-  return (
+  const _getDate = dayCount => {
+    var currentDate = new Date(
+      new Date().getTime() + 24 * dayCount * 60 * 60 * 1000,
+    );
+    return currentDate.toISOString();
+  };
+
+  useEffect(() => {
+    console.log(props.navigation.state.params.id);
+    setData(props.navigation.state.params.schedule);
+
+    const _getData = __id => {
+      const param = {
+        limit: '300',
+        doctor: __id,
+        date: new Date().toISOString(),
+      };
+      const config = {
+        'Content-Type': 'application/json',
+      };
+      axios
+        .post(`${Host}/appointment/get`, param, config)
+        .then(result => {
+          if (result.status) {
+            setData(result.data.data);
+            setLoading(false);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    };
+    _getData(props.navigation.state.params.id);
+    console.log(props.navigation.state.params.schedule);
+  }, [loading]);
+
+  return loading ? (
+    <Text>Loading...</Text>
+  ) : (
     <View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View>
           <TopNavBar nav={props} heading={props.heading} />
-          <Day showBookPopup={tougleBookPopup} setUpBook={setUpBook}/>
-          <Day showBookPopup={tougleBookPopup} setUpBook={setUpBook}/>
-          <Day showBookPopup={tougleBookPopup} setUpBook={setUpBook}/>
-          <Day showBookPopup={tougleBookPopup} setUpBook={setUpBook}/>
+          {/* <Day 
+            showBookPopup={tougleBookPopup}
+            setUpBook={setUpBook}
+            _data={__getScheduleOfADate(_getDate(0),data)}
+            _date={ 
+              _getDate(0)
+                .toString()
+                .split('T')[0]
+            }
+          /> */}
+          <Day
+            showBookPopup={tougleBookPopup}
+            setUpBook={setUpBook}
+            _data={__getScheduleOfADate(_getDate(1), data)}
+            _date={
+              _getDate(1)
+                .toString()
+                .split('T')[0]
+            }
+          />
+          <Day
+            showBookPopup={tougleBookPopup}
+            setUpBook={setUpBook}
+            _data={__getScheduleOfADate(_getDate(2), data)}
+            _date={
+              _getDate(2)
+                .toString()
+                .split('T')[0]
+            }
+          />
+          <Day
+            showBookPopup={tougleBookPopup}
+            setUpBook={setUpBook}
+            _data={__getScheduleOfADate(_getDate(3), data)}
+            _date={
+              _getDate(3)
+                .toString()
+                .split('T')[0]
+            }
+          />
         </View>
       </ScrollView>
       {showBook ? (
@@ -45,9 +135,6 @@ const Schedule = props => {
     </View>
   );
 };
-
-// props.date
-// props.time
 
 const Book = props => {
   return (
@@ -200,35 +287,21 @@ const topNavBar_styles = StyleSheet.create({
 });
 
 const Day = props => {
-  useEffect(() => {
-    console.log(props.showBookPopup);
-  });
   return (
     <View style={day.container}>
       <View>
-        <Text style={day.date}>23-03-2020</Text>
+        <Text style={day.date}>{props._date}</Text>
       </View>
       <View style={day.holder}>
-        <Slot popup={props.showBookPopup} status="booked" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.30 AM" />
-        <Slot popup={props.showBookPopup} status="booked" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="open" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.50 AM" />
-        <Slot popup={props.showBookPopup} status="booked" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.55 AM" />
-        <Slot popup={props.showBookPopup} status="booked" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="open" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="booked" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="open" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="booked" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="open" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="booked" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.30 AM" />
-        <Slot popup={props.showBookPopup} status="booked" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="open" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.50 AM" />
-        <Slot popup={props.showBookPopup} status="booked" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.55 AM" />
-        <Slot popup={props.showBookPopup} status="booked" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="open" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="booked" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="open" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="booked" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
-        <Slot popup={props.showBookPopup} status="open" setUpBook={props.setUpBook} date={'22-03-2013'} time="10.40 AM" />
+        {props._data.map((item, index) => (
+          <Slot
+            popup={props.showBookPopup}
+            status={item.booked ? 'booked' : 'empty'}
+            setUpBook={props.setUpBook}
+            date={props._date}
+            time={__getTimgeFromIso(item.bookedFor)}
+          />
+        ))}
       </View>
     </View>
   );
@@ -260,7 +333,7 @@ const Slot = props => {
   const tougle = openPopup => {
     console.log('tougle');
     setSelect(!selected);
-    props.setUpBook(props.date, props.time)
+    props.setUpBook(props.date, props.time);
     openPopup ? props.popup() : null;
   };
 
@@ -272,9 +345,7 @@ const Slot = props => {
     <TouchableOpacity
       style={[slot.container, slot.open, selected ? slot.select : null]}
       onPress={() => tougle(true)}>
-      <Text style={selected ? slot.text_a : {color: '#000'}}>
-        {props.time}
-      </Text>
+      <Text style={selected ? slot.text_a : {color: '#000'}}>{props.time}</Text>
     </TouchableOpacity>
   );
 };
