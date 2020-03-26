@@ -15,6 +15,7 @@ import TButton from '../../components/prefab/Buttons/TButton';
 import DoctorOption from '../../components/prefab/Doctors/DoctorOption';
 import axios from 'axios';
 import {Host} from '../../config/settings/Connection';
+import {_checkLogin, _saveDataToStorage} from '../../config/common/Storage'
 
 const _TopDoctors = [
   {
@@ -83,7 +84,6 @@ const _RecentlyViewed = [
 //   return compair;
 // }
 
-
 const Home = props => {
   const [search, setSearch] = useState('');
   const [data, setData] = useState(null);
@@ -91,6 +91,12 @@ const Home = props => {
 
   useEffect(() => {
     // console.log(props);
+
+    if (_checkLogin) {
+      console.log('User Logedin');
+    } else {
+      console.log('Not Login');
+    }
 
     const _getData = () => {
       axios
@@ -284,8 +290,7 @@ const search = StyleSheet.create({
 });
 
 const Section = props => {
-  useEffect(() => {
-  });
+  useEffect(() => {});
 
   return (
     <View style={section.container}>

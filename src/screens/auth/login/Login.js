@@ -4,43 +4,97 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   ScrollView,
   TextInput,
+  AsyncStorage,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconM from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import {Host} from '../../../config/settings/Connection';
-import NavigationActions from 'react-navigation/src/NavigationActions'
+import NavigationActions from 'react-navigation/src/NavigationActions';
+import {_checkLogin, _saveDataToStorage} from '../../../config/common/Storage';
 
 const Login = props => {
-  const [data, setData] = useState();
+  const [data, setData] = useState({email: '', password: ''});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(false);
+    
   }, [loading]);
+
+  const handelEmailInput = e => {
+    console.log(e.target);
+    setData({...data, email: e});
+  };
+
+  const handelPasswordInput = e => {
+    setData({...data, password: e});
+  };
+
+  const _save = async userData => {
+    await AsyncStorage.setItem('userData', JSON.stringify(userData), () => {
+      props.navigation.navigate('Setting');
+    });
+  };
+
+  const _handelLogin = () => {
+    console.log(data);
+
+    const config = {
+      'Content-Type': 'application/json',
+    };
+
+    axios
+      .post(`${Host}/patient/authenticate`, data, config)
+      .then(result => {
+        // console.log(result);
+        if (result.status) {
+          const __data = {
+            email: result.data.email,
+            name: result.data.name,
+            id: result.data._id,
+          };
+          _save(__data);
+        }
+        console.log(result);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
 
   return loading ? (
     <Text>Loading..</Text>
   ) : (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View>
-      <Icon
-        style={{ position: 'absolute', margin: 15}}
-        name="arrow-left-circle"
-        color={'#000'}
-        size={25}
-        // onPress={() => props.navigation.dispatch(NavigationActions.back())}
-        // onPress={() => props.navigation.goBack(null)}
-        onPress={() => props.navigation.navigate('Setting')}
-      />
+        <Icon
+          style={{position: 'absolute', margin: 15}}
+          name="arrow-left-circle"
+          color={'#000'}
+          size={25}
+          // onPress={() => props.navigation.dispatch(NavigationActions.back())}
+          // onPress={() => props.navigation.goBack(null)}
+          onPress={() => props.navigation.navigate('Setting')}
+        />
         <HeadText headmsg={'Welcome,'} subMsg={'Sign in to continue!'} />
-        <InputBox label={'Email Id'} secureText={false} />
-        <InputBox label={'Password'} secureText={true} />
+        <InputBox
+          label={'Email Id'}
+          secureText={false}
+          onChange={handelEmailInput}
+        />
+        <InputBox
+          label={'Password'}
+          secureText={true}
+          onChange={handelPasswordInput}
+        />
+        {/* <TextInput label={'Email Id'} placeholder="email" onChangeText={e => setData({...data,email: e})}/> */}
+        {/* <TextInput label={'Password'} placeholder="password" onChange={handelPasswordInput} /> */}
         <SubText text={'Forgot Password?'} />
         <ActionButton
+          onClick={_handelLogin}
           label={'Login'}
           backgroundColor={'#e755cf'}
           color={'#fff'}
@@ -54,7 +108,13 @@ const Login = props => {
         />
       </View>
       <BottomText
-        onPress={() => props.navigation.navigate('Auth', {}, NavigationActions.navigate({routeName:'SignUp'}))}
+        onPress={() =>
+          props.navigation.navigate(
+            'Auth',
+            {},
+            NavigationActions.navigate({routeName: 'SignUp'}),
+          )
+        }
         text={`I'm a new User.`}
         linkText={'Sign Up'}
         color={'#e755cf'}
@@ -120,6 +180,8 @@ const InputBox = props => {
       <View style={InputBoxStyle.inputHolder}>
         <Text style={InputBoxStyle.label}>{`Enter ${props.label}`}</Text>
         <TextInput
+          onChangeText={e => props.onChange(e)}
+          name={''}
           style={InputBoxStyle.input}
           secureTextEntry={props.secureText}
           placeholder={`Enter your ${props.label}`}
@@ -167,7 +229,8 @@ const ActionButton = props => {
         style={[
           ActionButtonStyle.btn,
           {backgroundColor: props.backgroundColor, color: props.color},
-        ]}>
+        ]}
+        onPress={props.onClick}>
         <View style={ActionButtonStyle.row_Box}>
           {props.icon ? (
             <Icon

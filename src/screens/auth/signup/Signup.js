@@ -7,44 +7,118 @@ import {
   Image,
   ScrollView,
   TextInput,
+  AsyncStorage,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconM from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import {Host} from '../../../config/settings/Connection';
+import {useDispatch, useSelector} from 'react-redux';
+import {addUserToRedux} from '../../../redux/action/auth';
 
 const SignUp = props => {
-  const [data, setData] = useState();
+  const [data, setData] = useState({
+    email: '',
+    password: '',
+    name: '',
+    phone: '',
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(false);
   }, [loading]);
 
+  const handelEmailChange = e => {
+    console.log(e.target);
+    setData({...data, email: e});
+  };
 
+  const handelPasswordChange = e => {
+    setData({...data, password: e});
+  };
 
+  const handelNameChange = e => {
+    setData({...data, name: e});
+  };
+
+  const handelPhoneChange = e => {
+    setData({...data, phone: e});
+  };
+
+  const _save = async (userData) => {
+    await AsyncStorage.setItem('userData', JSON.stringify(userData), () => {
+      props.navigation.navigate('Setting')
+    });
+  };
+
+  const handelSubmit = () => {
+    console.log(data);
+
+    const config = {
+      'Content-Type': 'application/json',
+    };
+
+    axios
+      .post(`${Host}/patient/register`, data, config)
+      .then(result => {
+        console.log('result');
+        if (result.data.status) {
+          const __data = {
+            email: result.data.data.email,
+            name: result.data.data.name,
+            id: result.data.data._id,
+          };
+          _save(__data);
+
+          // dispatch(addUserToRedux(data))
+        }
+        console.log(result.data.status);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
   return loading ? (
     <Text>Loading..</Text>
   ) : (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View>
-      <Icon
-        style={{ position: 'absolute', margin: 15}}
-        name="arrow-left-circle"
-        color={'#000'}
-        size={25}
-        // onPress={() => props.navigation.dispatch(NavigationActions.back())}
-        onPress={() => props.navigation.goBack(null)}
-      />
+        <Icon
+          style={{position: 'absolute', margin: 15}}
+          name="arrow-left-circle"
+          color={'#000'}
+          size={25}
+          // onPress={() => props.navigation.dispatch(NavigationActions.back())}
+          onPress={() => props.navigation.goBack(null)}
+        />
         <HeadText
           headmsg={'Create Account,'}
           subMsg={'Sign up to get started!'}
         />
-        <InputBox label={'Full Name'} secureText={false} />
-        <InputBox label={'Email Id'} secureText={false} />
-        <InputBox label={'Password'} secureText={true} />
+        <InputBox
+          label={'Full Name'}
+          secureText={false}
+          onChange={handelNameChange}
+        />
+        <InputBox
+          label={'Email Id'}
+          secureText={false}
+          onChange={handelEmailChange}
+        />
+        <InputBox
+          label={'Phone No'}
+          secureText={false}
+          onChange={handelPhoneChange}
+        />
+        <InputBox
+          label={'Password'}
+          secureText={true}
+          onChange={handelPasswordChange}
+        />
         <SubText text={'Forgot Password?'} />
         <ActionButton
+          onClick={handelSubmit}
           label={'SignUp'}
           backgroundColor={'#e755cf'}
           color={'#fff'}
@@ -123,6 +197,7 @@ const InputBox = props => {
       <View style={InputBoxStyle.inputHolder}>
         <Text style={InputBoxStyle.label}>{`Enter ${props.label}`}</Text>
         <TextInput
+          onChangeText={e => props.onChange(e)}
           style={InputBoxStyle.input}
           secureTextEntry={props.secureText}
           placeholder={`Enter your ${props.label}`}
@@ -170,7 +245,8 @@ const ActionButton = props => {
         style={[
           ActionButtonStyle.btn,
           {backgroundColor: props.backgroundColor, color: props.color},
-        ]}>
+        ]}
+        onPress={props.onClick}>
         <View style={ActionButtonStyle.row_Box}>
           {props.icon ? (
             <Icon
@@ -230,7 +306,11 @@ const BottomText = props => {
     <View style={[BottomTextStyle.container, BottomTextStyle.row_Box]}>
       <Text style={BottomTextStyle.text}>{props.text}</Text>
       <TouchableOpacity>
-        <Text style={[BottomTextStyle.text, {color: props.color, fontWeight: 'bold'}]}>
+        <Text
+          style={[
+            BottomTextStyle.text,
+            {color: props.color, fontWeight: 'bold'},
+          ]}>
           {props.linkText}
         </Text>
       </TouchableOpacity>
@@ -259,7 +339,7 @@ const BottomTextStyle = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
 });
 

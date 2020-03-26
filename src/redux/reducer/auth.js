@@ -13,10 +13,12 @@ const AuthReducer = (state = initialState, action) => {
       return {
         ...state,
         email: action.email,
-        phoneNo: action.phoneNo,
+        phoneNo: action.phone,
         name: action.name,
         password: action.password,
       };
+    default:
+      return state;
   }
 };
 
