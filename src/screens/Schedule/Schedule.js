@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  AsyncStorage,
 } from 'react-native';
 import {text} from '../../config/styles/color';
 import Icon from 'react-native-vector-icons/Feather';
@@ -29,10 +30,44 @@ const __getTimgeFromIso = isoTime => {
   return t.getUTCHours() + ':' + t.getUTCMinutes();
 };
 
+const BookASchedule = (patientId, transactionId, timeSlot, practise) => {
+  console.log(patientId);
+  console.log(transactionId);
+  console.log(timeSlot);
+  console.log(practise);
+
+  const data = {
+    patient: patientId,
+    transactionId: transactionId,
+    timeSlot: timeSlot,
+    practise: practise,
+  };
+
+  const config = {
+    'Content-Type': 'application/json',
+  };
+
+  axios
+    .post(`${Host}/appointment/book`, data, config)
+    .then(result => {
+      console.log(result);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
 const Schedule = props => {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(true);
-  const [book, setBook] = useState({date: '00-00-0000', time: '00:00 AM'});
+  const [book, setBook] = useState({
+    date: '00-00-0000',
+    time: '00:00 AM',
+    timeSlot: '',
+    practise: '',
+    transactionId: '1245',
+  });
+
   const [showBook, setShowBook] = useState(false);
 
   const tougleBookPopup = () => {
@@ -40,8 +75,19 @@ const Schedule = props => {
     console.log('comes');
   };
 
-  const setUpBook = (date, time) => {
-    setBook({date: date, time: time});
+  const _checkForLogedIn = () => {
+    const _data = AsyncStorage.getItem('userData');
+    if (_data.length < 3) {
+      props.navigation.navigate('Setting');
+    } else {
+      console.log('WOOOWOOW');
+    }
+  };
+
+  const setUpBook = (date, time, bid) => {
+    _checkForLogedIn();
+    // console.log(id);
+    setBook({date: date, time: time, timeSlot: bid});
   };
 
   const _getDate = dayCount => {
@@ -50,6 +96,7 @@ const Schedule = props => {
     );
     return currentDate.toISOString();
   };
+
 
   useEffect(() => {
     console.log(props.navigation.state.params.id);
@@ -130,13 +177,35 @@ const Schedule = props => {
         </View>
       </ScrollView>
       {showBook ? (
-        <Book date={book.date} time={book.time} popup={tougleBookPopup} />
+        <Book
+          bid={book.timeSlot}
+          date={book.date}
+          time={book.time}
+          popup={tougleBookPopup}
+          doc_id={props.navigation.state.params.id}
+        />
       ) : null}
     </View>
   );
 };
 
 const Book = props => {
+  const [uid, setUid] = useState();
+
+  const _getDataFromLocalStore = async () => {
+    var obj = null;
+    await AsyncStorage.getItem('userData', (err, result) => {
+      if (result !== null) {
+        obj = JSON.parse(result);
+        setUid(obj.id);
+      }
+    });
+  };
+
+  useEffect(() => {
+    _getDataFromLocalStore();
+  });
+
   return (
     <View style={book.container}>
       <View style={[book.holder, book.shadow]}>
@@ -157,7 +226,9 @@ const Book = props => {
             <Text style={book.text_b}>{props.time}</Text>
           </View>
         </View>
-        <TouchableOpacity style={book.button}>
+        <TouchableOpacity
+          style={book.button}
+          onPress={() => BookASchedule(uid, '12345', props.bid, props.doc_id)}>
           <Text style={book.text}>Book Now</Text>
         </TouchableOpacity>
       </View>
@@ -295,6 +366,7 @@ const Day = props => {
       <View style={day.holder}>
         {props._data.map((item, index) => (
           <Slot
+            bid={item._id}
             popup={props.showBookPopup}
             status={item.booked ? 'booked' : 'empty'}
             setUpBook={props.setUpBook}
@@ -331,9 +403,9 @@ const Slot = props => {
   const [selected, setSelect] = useState(false);
 
   const tougle = openPopup => {
-    console.log('tougle');
+    console.log('tougle' + props.bid);
     setSelect(!selected);
-    props.setUpBook(props.date, props.time);
+    props.setUpBook(props.date, props.time, props.bid);
     openPopup ? props.popup() : null;
   };
 

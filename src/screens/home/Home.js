@@ -17,61 +17,6 @@ import axios from 'axios';
 import {Host} from '../../config/settings/Connection';
 import {_checkLogin, _saveDataToStorage} from '../../config/common/Storage'
 
-const _TopDoctors = [
-  {
-    name: 'Kamalesh Biswas',
-    tag: 'Dentists',
-    isActive: true,
-  },
-  {
-    name: 'Kamalesh Biswas',
-    tag: 'Dentists1',
-    isActive: false,
-  },
-  {
-    name: 'Kamalesh Biswas',
-    tag: 'Dentists2',
-    isActive: true,
-  },
-  {
-    name: 'Kamalesh Biswas',
-    tag: 'Dentists3',
-    isActive: true,
-  },
-  {
-    name: 'Kamalesh Biswas',
-    tag: 'Dentists4',
-    isActive: true,
-  },
-];
-
-const _RecentlyViewed = [
-  {
-    name: 'Kamalesh Biswas',
-    tag: 'Dentists',
-    isActive: true,
-  },
-  {
-    name: 'Kamalesh Biswas',
-    tag: 'Dentists1',
-    isActive: false,
-  },
-  {
-    name: 'Kamalesh Biswas',
-    tag: 'Dentists2',
-    isActive: true,
-  },
-  {
-    name: 'Kamalesh Biswas',
-    tag: 'Dentists3',
-    isActive: false,
-  },
-  {
-    name: 'Kamalesh Biswas',
-    tag: 'Dentists4',
-    isActive: true,
-  },
-];
 
 // const __sortTopDoctors = (doctor1, doctor2) => {
 //   let compair = 0;
@@ -92,18 +37,18 @@ const Home = props => {
   useEffect(() => {
     // console.log(props);
 
-    if (_checkLogin) {
-      console.log('User Logedin');
-    } else {
-      console.log('Not Login');
-    }
+    // if (_checkLogin) {
+    //   console.log('User Logedin');
+    // } else {
+    //   console.log('Not Login');
+    // }
 
     const _getData = () => {
       axios
         .post(`${Host}/doctors/search`)
         .then(result => {
           if (result.status) {
-            // console.log(result.data.data);
+            console.log(result.data.data);
             setData(result.data.data);
             setLoading(false);
           }
