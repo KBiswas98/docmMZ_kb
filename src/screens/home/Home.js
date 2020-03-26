@@ -72,6 +72,18 @@ const _RecentlyViewed = [
   },
 ];
 
+// const __sortTopDoctors = (doctor1, doctor2) => {
+//   let compair = 0;
+//   if(doctor1.appointments.length < doctor2.appointments.left){
+//     compair = 1;
+//   } else if(doctor1.appointments.length > doctor2.appointments.left){
+//     compair = -1;
+//   }
+
+//   return compair;
+// }
+
+
 const Home = props => {
   const [search, setSearch] = useState('');
   const [data, setData] = useState(null);
@@ -85,7 +97,7 @@ const Home = props => {
         .post(`${Host}/doctors/search`)
         .then(result => {
           if (result.status) {
-            console.log(result.data.data);
+            // console.log(result.data.data);
             setData(result.data.data);
             setLoading(false);
           }
@@ -103,7 +115,7 @@ const Home = props => {
   };
 
   const handelSearchSubmit = () => {
-    console.log(search);
+    // console.log(search);
     props.navigation.navigate('searchScreen', {mySearch: search});
   };
 
@@ -273,7 +285,6 @@ const search = StyleSheet.create({
 
 const Section = props => {
   useEffect(() => {
-    // console.log(props.data)
   });
 
   return (
@@ -293,7 +304,7 @@ const Section = props => {
           return (
             <DoctorOption
               name={item.basic.name}
-              tag={item.basic.first_name}
+              tag={item.taxonomies.desc || item.identifiers.desc || 'unknown'}
               key={index}
               isActive={item.isActive}
               nav={props.nav}

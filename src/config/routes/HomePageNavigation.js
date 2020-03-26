@@ -10,9 +10,14 @@ import Login from '../../screens/Login/Login';
 import SignUp from '../../screens/SignUp/SignUp';
 import ForgotPassword from '../../screens/ForgotPassword/ForgotPassword';
 import Otp from '../../screens/Otp/Otp';
+import Schedule from '../../screens/Schedule/Schedule';
 
 const stackNav = createStackNavigator(
   {
+    Login: Login,
+    SignUp: SignUp,
+    ForgotPassword: ForgotPassword,
+    otpScreen: Otp,
     Search,
   },
   {
@@ -27,11 +32,8 @@ const HomePageNavigation = createSwitchNavigator(
     homeScreen: Home,
     allDoctorScreen: AllDoctor,
     doctorProfileScreen: Profile,
+    scheduleScreen: Schedule,
     searchScreen: Search,
-    Login: Login,
-    SignUp: SignUp,
-    ForgotPassword: ForgotPassword,
-    otpScreen: Otp,
   },
   {
     initialRouteName: 'homeScreen',
