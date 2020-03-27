@@ -15,8 +15,10 @@ const Setting = props => {
 
   const _getDataFromLocalStore = async () => {
     await AsyncStorage.getItem('userData', (err, result) => {
-        console.log(result)
-      if (result.length >2) {
+      console.log(result);
+      if (result === null || result === undefined) {
+        setUser({email: ''});
+      } else if (result.length > 2) {
         setUser(JSON.parse(result) || {email: ''});
       }
       setLoading(false);
@@ -70,6 +72,11 @@ const Options = props => {
         icon={'ios-contact'}
         name={'My Doctors'}
         onClick={() => props.type !== 'hide' && console.log('after loged in.')}
+      />
+      <Option
+        icon={'ios-person'}
+        name={'My Profile'}
+        onClick={() => props.type !== 'hide' && props.nav.navigation.navigate('PatientProfile')}
       />
       <Option
         icon={'ios-albums'}

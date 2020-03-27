@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import Icons from 'react-native-vector-icons/Fontisto';
 import axios from 'axios';
 import {Host} from '../../config/settings/Connection';
+import NavigationActions from 'react-navigation/src/NavigationActions';
 
 const __getScheduleOfADate = (date /* iso format*/, allSchedule) => {
   let dailySchedule = [];
@@ -30,11 +31,16 @@ const __getTimgeFromIso = isoTime => {
   return t.getUTCHours() + ':' + t.getUTCMinutes();
 };
 
-const BookASchedule = (patientId, transactionId, timeSlot, practise) => {
+const BookASchedule = (patientId, transactionId, timeSlot, practise, props) => {
   console.log(patientId);
   console.log(transactionId);
   console.log(timeSlot);
   console.log(practise);
+
+
+  if(patientId === undefined || patientId === null) {
+    props.navigation.navigate('Setting', {}, NavigationActions.navigate({routeName: 'Auth'}))
+  }
 
   const data = {
     patient: patientId,
@@ -183,6 +189,7 @@ const Schedule = props => {
           time={book.time}
           popup={tougleBookPopup}
           doc_id={props.navigation.state.params.id}
+          nav={props}
         />
       ) : null}
     </View>
@@ -228,7 +235,7 @@ const Book = props => {
         </View>
         <TouchableOpacity
           style={book.button}
-          onPress={() => BookASchedule(uid, '12345', props.bid, props.doc_id)}>
+          onPress={() => BookASchedule(uid, '12345', props.bid, props.doc_id, props.nav)}>
           <Text style={book.text}>Book Now</Text>
         </TouchableOpacity>
       </View>

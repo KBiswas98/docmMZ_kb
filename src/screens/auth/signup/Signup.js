@@ -67,6 +67,7 @@ const SignUp = props => {
           const __data = {
             email: result.data.data.email,
             name: result.data.data.name,
+            phone: result.data.data.phone,
             id: result.data.data._id,
           };
           _save(__data);

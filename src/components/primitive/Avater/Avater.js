@@ -5,7 +5,7 @@ const Avater = props => {
   return (
     <View style={avater.container}>
       <Image
-        style={avater.profile_pic}
+        style={props.width ? {height: props.width, width: props.width, borderRadius: 100}: avater.profile_pic}
         source={require('../../../assets/images/doc.jpg')}
       />
       {props.isActive ? (
