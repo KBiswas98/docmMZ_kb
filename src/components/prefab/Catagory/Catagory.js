@@ -6,45 +6,39 @@ import {
   StyleSheet,
   ViewPagerAndroidComponent,
 } from 'react-native';
-import {text} from '../../../config/styles/color';
-import Icon from 'react-native-vector-icons/Feather';
-
+import {text, color} from '../../../config/styles/color';
+ 
 const Catagory = props => {
   return (
-    <View style={styles.container}>
-      {props.children}
-      <Text style={styles.text}>{props.title}</Text>
-      {props.isActive ? (
-        <Image
-          source={require('../../../assets/system_icon/icons8_ok_96px_1.png')}
-          style={styles.icon}
-        />
-      ) : (
-        <Image
-          source={''}
-          style={styles.icon}
-        />
-      )}
-    </View>
-  )
+      <View style={[styles.container, styles.shadow, props.isActive&& styles.active]}>
+        {props.children}
+        <Text style={styles.text}>{props.title}</Text>
+        
+      </View>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
+    
     margin: 10,
+    marginVertical: 30,
     display: 'flex',
     flexDirection: 'column',
-    paddingLeft: 40,
-    paddingRight: 40,
-    paddingTop: 20,
-    paddingBottom: 10,
-    borderRadius: 10,
-    borderWidth: 2,
+    borderRadius: 16,
+    borderWidth: 0,
     borderColor: '#EFF1F5',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    height: 121,
+    width: 208,
+    backgroundColor: '#fff'
+  },
+
+  active: {
+    backgroundColor: color.brand_color,
   },
   text: {
     marginTop: 9,
@@ -56,6 +50,11 @@ const styles = StyleSheet.create({
     height: 18,
     width: 18,
   },
+  shadow: {
+    shadowOpacity: 1,
+    elevation: 2,
+    shadowColor: color.brand_color,
+  }
 });
 
 export default Catagory;

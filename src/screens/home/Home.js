@@ -7,16 +7,17 @@ import {
   ScrollView,
   StyleSheet,
   TextInput,
+  Switch,
 } from 'react-native';
-import {text} from '../../config/styles/color';
+import {text, color} from '../../config/styles/color';
 import Catagory from '../../components/prefab/Catagory/Catagory';
 import Icon from 'react-native-vector-icons/Feather';
 import TButton from '../../components/prefab/Buttons/TButton';
 import DoctorOption from '../../components/prefab/Doctors/DoctorOption';
 import axios from 'axios';
 import {Host} from '../../config/settings/Connection';
-import {_checkLogin, _saveDataToStorage} from '../../config/common/Storage'
-
+import {_checkLogin, _saveDataToStorage} from '../../config/common/Storage';
+import SearchBox from '../../components/primitive/Input/Input';
 
 // const __sortTopDoctors = (doctor1, doctor2) => {
 //   let compair = 0;
@@ -73,7 +74,9 @@ const Home = props => {
   return loading ? (
     <Text>Loading..</Text>
   ) : (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      style={{backgroundColor: color.background}}>
       <TopNavBar />
       <View>
         <ScrollView
@@ -100,19 +103,24 @@ const Home = props => {
           </Catagory>
         </ScrollView>
       </View>
-      <SearchBar
-        onChange={handelSearchInput}
-        onSubmit={handelSearchSubmit}
-        icon={'search'}
-      />
+      <View style={{ display: "flex", flexDirection: 'row', alignItems: 'center', flex: 1, marginHorizontal: 20, marginVertical: 30}}>
+        <SearchBox
+          onChange={handelSearchInput}
+          onSubmit={handelSearchSubmit}
+          icon={'search'}
+          
+        />
+        <Image source={require('../../assets/icons/setting.png')} style={{ width: 20, height: 20, marginLeft: 15, }}/>
+      </View>
+
       <View>
         <Section name={'Top Doctors'} data={data} nav={props} />
-        <Section
+        {/* <Section
           name={'Recently Viewed'}
           data={data}
           noViewAll={true}
           nav={props}
-        />
+        /> */}
       </View>
     </ScrollView>
   );
@@ -128,36 +136,49 @@ const home_styles = StyleSheet.create({
 
 const TopNavBar = () => (
   <View style={topNavBar_styles.top_bar}>
-    <Text style={topNavBar_styles.heading}>
-      Find a <Text style={topNavBar_styles.heading_bold}>doctor</Text>
-    </Text>
-    <View style={topNavBar_styles.holder}>
-      <TouchableOpacity style={topNavBar_styles.drop_down}>
-        <Text>Now</Text>
-      </TouchableOpacity>
+    <View
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        flex: 1,
+        alignItems: 'center',
+      }}>
+      <Text style={topNavBar_styles.heading}>Find a</Text>
       <TouchableOpacity>
         <Image
-          source={require('../../assets/icons/setting.png')}
+          source={require('../../assets/icons/Menu.png')}
           style={topNavBar_styles.icon}
         />
       </TouchableOpacity>
     </View>
+    <View style={topNavBar_styles.holder}>
+      <Text style={topNavBar_styles.heading_bold}>doctor</Text>
+      <Switch
+        thumbColor={true ? '#fff' : '#fff'}
+        trackColor={{false: color.brand_color, true: color.brand_color}}
+        style={topNavBar_styles.switch}
+      />
+    </View>
   </View>
 );
 const topNavBar_styles = StyleSheet.create({
+  switch: {
+    transform: [{scaleX: 0.8}, {scaleY: 0.8}],
+  },
   top_bar: {
     padding: 15,
+    paddingTop: 45,
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: 'column',
   },
   heading: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: '300',
-    color: text.color_1,
+    color: '#000',
   },
   heading_bold: {
+    fontSize: 45,
     fontWeight: 'bold',
     color: text.color_0,
   },
@@ -174,65 +195,65 @@ const topNavBar_styles = StyleSheet.create({
     marginRight: 20,
   },
   icon: {
-    height: 18,
-    width: 18,
+    height: 16,
+    width: 28,
   },
 });
 
-const SearchBar = props => {
-  return (
-    <View style={search.container}>
-      <Icon
-        name="search"
-        color="#fff"
-        size={25}
-        style={search.placeholder_icon}
-      />
-      <TextInput
-        style={search.input}
-        onChangeText={text => props.onChange(text)}
-        placeholder="Search by on conditions, symptoms..."
-      />
-      <TouchableOpacity style={search.button} onPress={props.onSubmit}>
-        <Text style={{color: '#fff', fontWeight: 'bold'}}>Show result</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-const search = StyleSheet.create({
-  container: {
-    margin: 20,
-    borderRadius: 10,
-    backgroundColor: '#855FBF',
-    marginTop: 20,
-    marginBottom: 20,
-    padding: 30,
-    display: 'flex',
-    alignItems: 'center',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    // borderWidth: 1,
-    color: '#fff',
-    borderRadius: 5,
-    width: '100%',
-    paddingLeft: 40,
-    backgroundColor: '#A16FC4',
-  },
-  button: {
-    color: '#fff',
-    marginTop: 20,
-  },
-  placeholder_icon: {
-    position: 'absolute',
-    left: 38,
-    top: 38,
-    opacity: 1,
-    zIndex: 10,
-    opacity: 0.5,
-  },
-});
+// const SearchBar = props => {
+//   return (
+//     <View style={search.container}>
+//       <Icon
+//         name="search"
+//         color="#fff"
+//         size={25}
+//         style={search.placeholder_icon}
+//       />
+//       <TextInput
+//         style={search.input}
+//         onChangeText={text => props.onChange(text)}
+//         placeholder="Search by on conditions, symptoms..."
+//       />
+//       <TouchableOpacity style={search.button} onPress={props.onSubmit}>
+//         <Text style={{color: '#fff', fontWeight: 'bold'}}>Show result</Text>
+//       </TouchableOpacity>
+//     </View>
+//   );
+// };
+// const search = StyleSheet.create({
+//   container: {
+//     margin: 20,
+//     borderRadius: 10,
+//     backgroundColor: '#855FBF',
+//     marginTop: 20,
+//     marginBottom: 20,
+//     padding: 30,
+//     display: 'flex',
+//     alignItems: 'center',
+//   },
+//   input: {
+//     height: 40,
+//     borderColor: 'gray',
+//     // borderWidth: 1,
+//     color: '#fff',
+//     borderRadius: 5,
+//     width: '100%',
+//     paddingLeft: 40,
+//     backgroundColor: '#A16FC4',
+//   },
+//   button: {
+//     color: '#fff',
+//     marginTop: 20,
+//   },
+//   placeholder_icon: {
+//     position: 'absolute',
+//     left: 38,
+//     top: 38,
+//     opacity: 1,
+//     zIndex: 10,
+//     opacity: 0.5,
+//   },
+// });
 
 const Section = props => {
   useEffect(() => {});
@@ -241,16 +262,16 @@ const Section = props => {
     <View style={section.container}>
       <View style={section.header}>
         <Text style={section.heading}>{props.name}</Text>
-        <TButton
+        {/* <TButton
           title={'view all'}
           onClick={() =>
             props.nav.navigation.navigate('allDoctorScreen', {name: props.name})
           }
-        />
+        /> */}
       </View>
       <View style={section.doc_container}>
         {props.data.map((item, index) => {
-          if (index >= 3) return;
+          if (index >= 6) return;
           return (
             <DoctorOption
               name={item.basic.name}
@@ -274,10 +295,11 @@ const section = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginBottom: 25,
   },
   heading: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 14,
+    // fontWeight: 'bold',
     color: text.color_0,
   },
   doc_container: {
