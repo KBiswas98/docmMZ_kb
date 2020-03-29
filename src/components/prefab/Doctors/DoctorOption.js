@@ -1,25 +1,56 @@
 import React, {useEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import { StyleSheet, TouchableOpacity} from 'react-native';
 import Avater from '../../primitive/Avater/Avater';
 import Tag from '../../primitive/Tag/Tag';
-import {button, text} from '../../../config/styles/color';
-// import Button from '../../primitive/Button/Button';
+import {button, text, color} from '../../../config/styles/color';
+import Star from '../Stars/Star';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { createAnimatableComponent, View, Text } from 'react-native-animatable';
+
+const mySchedule = [
+  {
+    time: '10:30',
+    available: true,
+  },
+  {
+    time: '10:40',
+    available: false,
+  },
+  {
+    time: '10:50',
+    available: false,
+  },
+];
 
 const DoctorOption = props => {
   useEffect(() => {
     // console.log(props)
   });
   return (
-    <View style={doctor.samll_card}>
+    <View style={[doctor.samll_card, doctor.shadow]} animation="bounceInRight" duration={2000}>
       <View>
         <Avater imageLink={null} isActive={props.isActive} />
       </View>
       <View style={doctor.body}>
-        <View style={{ display: 'flex', flex:1}}>
-          <Text style={doctor.heading}>{props.name.toString().length > 15 ? props.name.toString().substring(0,17) + '...' : props.name.toString()}</Text>
-          <View style={{ display: "flex", flexDirection: 'row'}}>
-            <Tag tag={props.tag} />
+        <View style={{display: 'flex', flex: 1}}>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <Text style={doctor.heading}>
+              {props.name.toString().length > 12
+                ? props.name.toString().substring(0, 13) + '...'
+                : props.name.toString()}
+            </Text>
+            <Star />
           </View>
+
+          <View style={{display: 'flex', flexDirection: 'row'}}>
+            <Tag tag={props.tag} mode={'Link'} />
+          </View>
+          <ScheduleViewer data={mySchedule} />
         </View>
         <View>
           <TouchableOpacity
@@ -27,11 +58,11 @@ const DoctorOption = props => {
               props.nav.navigation.navigate('doctorProfileScreen', {
                 name: props.name,
                 id: props.id,
-                tag: props.tag
+                tag: props.tag,
               })
             }
             style={doctor.button}>
-            <Text style={doctor.text}>{'Visit'}</Text>
+            <Icon name="navigate-next" color={color.white_color} size={30} />
           </TouchableOpacity>
         </View>
       </View>
@@ -44,14 +75,19 @@ const doctor = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: color.white_color,
+    margin: 5,
+    padding: 15,
+    borderRadius: 11,
   },
   heading: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: text.color_3,
+    fontSize: 14,
+    color: '#363B4C',
+    marginRight: 5,
+    textTransform: 'capitalize',
   },
   body: {
-    marginLeft: 10,
+    marginLeft: 20,
     display: 'flex',
     flex: 1,
     flexDirection: 'row',
@@ -59,27 +95,56 @@ const doctor = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    paddingBottom: 7,
-    paddingTop: 7,
-    paddingLeft: 15,
-    paddingRight: 15,
-    borderRadius: 5,
-    backgroundColor: button.color_0,
+    padding: 4,
+    borderRadius: 100,
+    backgroundColor: color.brand_color,
   },
   shadow: {
     shadowColor: '#000',
-    shadowOffset: {
-      width: 10,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 20,
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 1,
   },
   text: {
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+});
+
+const ScheduleViewer = props => {
+  return (
+    <View style={scheduleViewer.container}>
+      {props.data.map((item, index) => (
+        <View
+          key={index}
+          style={[scheduleViewer.time, item.available && scheduleViewer.available]}>
+          <Text style={[scheduleViewer.text, item.available && {color: color.white_color}]}>{item.time}</Text>
+        </View>
+      ))}
+    </View>
+  );
+};
+
+const scheduleViewer = StyleSheet.create({
+  container: {
+    marginTop: 10,
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  time: {
+    marginRight: 7,
+    marginVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: 100,
+  },
+  text: {
+    fontSize: 11,
+    color: color.not_heighlited,
+  },
+  available: {
+    backgroundColor: color.brand_color,
   },
 });
 

@@ -25,7 +25,7 @@ const HomePageNavigation = createSwitchNavigator(
     PatientProfile: PatientProfile
   },
   {
-    initialRouteName: 'PatientProfile',
+    initialRouteName: 'Setting',
   },
 );
 

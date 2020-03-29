@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {
-  View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   AsyncStorage,
 } from 'react-native';
 import NavigationActions from 'react-navigation/src/NavigationActions';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {View, Text} from 'react-native-animatable';
+// import {Loading} from '../loading/Loading';
 
 const Setting = props => {
   const [Loading, setLoading] = useState(true);
@@ -39,7 +39,7 @@ const Setting = props => {
   return Loading ? (
     <Text>Loading...</Text>
   ) : (
-    <View style={{marginTop: 20}}>
+    <View style={{marginTop: 20}}  animation="bounceInRight" duration={2000} >
       <Options nav={props} type={user.email.length > 2 ? 'show' : 'hide'} />
       <Account
         logout={_logout}
