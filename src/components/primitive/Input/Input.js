@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import {Text, View, TextInput, StyleSheet} from 'react-native';
+import {TextInput, StyleSheet} from 'react-native';
+import { createAnimatableComponent, View, Text } from 'react-native-animatable';
 
 class SearchBox extends Component {
   render() {
     return (
-      <View style={[searchBox.container]}>
+      <View style={[searchBox.container]} animation="fadeIn" duration={800}>
         <TextInput
           style={[searchBox.input, searchBox.shadow]}
           placeholder={'Search by  on conditions, symptoms... '}

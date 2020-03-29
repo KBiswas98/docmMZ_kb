@@ -1,16 +1,16 @@
 import React from 'react';
 import {
-  View,
-  Text,
+
   Image,
   StyleSheet,
   ViewPagerAndroidComponent,
 } from 'react-native';
 import {text, color} from '../../../config/styles/color';
+import { createAnimatableComponent, View, Text } from 'react-native-animatable';
  
 const Catagory = props => {
   return (
-      <View style={[styles.container, styles.shadow, props.isActive&& styles.active]}>
+      <View style={[styles.container, styles.shadow, props.isActive&& styles.active]} animation="fadeIn" duration={800}>
         {props.children}
         <Text style={styles.text}>{props.title}</Text>
         

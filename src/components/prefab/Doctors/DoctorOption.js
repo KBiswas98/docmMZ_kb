@@ -1,10 +1,11 @@
 import React, {useEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import { StyleSheet, TouchableOpacity} from 'react-native';
 import Avater from '../../primitive/Avater/Avater';
 import Tag from '../../primitive/Tag/Tag';
 import {button, text, color} from '../../../config/styles/color';
 import Star from '../Stars/Star';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { createAnimatableComponent, View, Text } from 'react-native-animatable';
 
 const mySchedule = [
   {
@@ -26,7 +27,7 @@ const DoctorOption = props => {
     // console.log(props)
   });
   return (
-    <View style={[doctor.samll_card, doctor.shadow]}>
+    <View style={[doctor.samll_card, doctor.shadow]} animation="bounceInRight" duration={2000}>
       <View>
         <Avater imageLink={null} isActive={props.isActive} />
       </View>

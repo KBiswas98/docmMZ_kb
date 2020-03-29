@@ -1,18 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import {
-  View,
-  Text,
   Image,
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  TextInput,
   Switch,
 } from 'react-native';
+import {View, Text} from 'react-native-animatable';
 import {text, color} from '../../config/styles/color';
 import Catagory from '../../components/prefab/Catagory/Catagory';
 import Icon from 'react-native-vector-icons/Feather';
-import TButton from '../../components/prefab/Buttons/TButton';
 import DoctorOption from '../../components/prefab/Doctors/DoctorOption';
 import axios from 'axios';
 import {Host} from '../../config/settings/Connection';
@@ -34,6 +31,7 @@ const Home = props => {
   const [search, setSearch] = useState('');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [animation, setAnimation] = useState({duration: 3}); 
 
   useEffect(() => {
     // console.log(props);
@@ -72,7 +70,7 @@ const Home = props => {
   };
 
   return loading ? (
-    <Text>Loading..</Text>
+    <Text>Loading...</Text>
   ) : (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -103,14 +101,24 @@ const Home = props => {
           </Catagory>
         </ScrollView>
       </View>
-      <View style={{ display: "flex", flexDirection: 'row', alignItems: 'center', flex: 1, marginHorizontal: 20, marginVertical: 30}}>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          flex: 1,
+          marginHorizontal: 20,
+          marginVertical: 30,
+        }}>
         <SearchBox
           onChange={handelSearchInput}
           onSubmit={handelSearchSubmit}
           icon={'search'}
-          
         />
-        <Image source={require('../../assets/icons/setting.png')} style={{ width: 20, height: 20, marginLeft: 15, }}/>
+        <Image
+          source={require('../../assets/icons/setting.png')}
+          style={{width: 20, height: 20, marginLeft: 15}}
+        />
       </View>
 
       <View>
