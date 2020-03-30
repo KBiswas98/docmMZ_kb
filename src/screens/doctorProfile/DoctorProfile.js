@@ -217,14 +217,14 @@ const topNavBar_styles = StyleSheet.create({
   },
   header_container: {
     backgroundColor: color.brand_color,
-    height: 215,
+    paddingBottom: 105,
   },
 });
 
 const ProfileBox = props => {
   return (
     <View style={profilebox.container}>
-      <View style={profilebox.shadow}>
+      <View style={profilebox.pro_contain}>
         <Image
           style={[profilebox.profile_pic]}
           source={require('../../assets/images/doc.jpg')}
@@ -289,6 +289,9 @@ const profilebox = StyleSheet.create({
     flexDirection: 'row-reverse',
     position: 'relative',
     margin: 20,
+  },
+  pro_contain: {
+    elevation: 10
   },
   profile_pic: {
     height: 145,

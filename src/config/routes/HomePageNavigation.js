@@ -1,4 +1,4 @@
-import {createSwitchNavigator} from 'react-navigation';
+import {createSwitchNavigator, createStackNavigator} from 'react-navigation';
 
 import Home from '../../screens/home/Home';
 import AllDoctor from '../../screens/allDoctors/AllDoctor';

@@ -16,7 +16,7 @@ const TopNavbar = props => {
   });
 
   return (
-    <View style={topNavBar_styles.top_bar}>
+    <View style={[topNavBar_styles.top_bar, props.style]}>
       <View
         style={{
           display: 'flex',
@@ -38,7 +38,7 @@ const TopNavbar = props => {
         <TouchableOpacity
           onPress={() => props.nav.navigation.navigate('Setting')}>
           <Image
-            source={require('../../../assets/icons/Menu.png')}
+            source={props.mode ? require('../../../assets/icons/Menu_white.png') : require('../../../assets/icons/Menu.png')}
             style={topNavBar_styles.icon}
           />
         </TouchableOpacity>

@@ -1,12 +1,40 @@
-import React from 'react'
-import { View, Text } from 'react-native'
+import React from 'react';
+import {View, Text, SafeAreaView, ScrollView, Slider, StyleSheet} from 'react-native';
+import {useSelector} from 'react-redux';
 
-const DoctorSlide = () => {
-    return (
-        <View>
-            <Text>Doc sider</Text>
+import {color} from '../../config/styles/color'
+
+import TopNavbar from '../../components/prefab/TopNavbar/TopNavbar';
+import DoctorProfile from '../../components/prefab/DoctorProfile/DoctorProfile'
+
+const DoctorSlide = props => {
+  const data = useSelector(state => state.DataStoreReducer.data);
+
+  return (
+    <SafeAreaView style={{backgroundColor: color.background}}>
+      <ScrollView >
+        <View style={slider.header}>
+          <TopNavbar nav={props} mode={true}/>
         </View>
-    )
-}
+        <ScrollView horizontal={true} style={slider.doctor_container} showsHorizontalScrollIndicator={false}>
+            <DoctorProfile nav={props}/>
+            <DoctorProfile nav={props}/>
+            <DoctorProfile nav={props}/>
+            <DoctorProfile nav={props}/>
+        </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
 
-export default DoctorSlide
+const slider = StyleSheet.create({
+    header: {
+        backgroundColor: color.brand_color,
+        paddingBottom: 200,
+    },
+    doctor_container: {
+        marginTop: -210,
+    }
+})
+
+export default DoctorSlide;
