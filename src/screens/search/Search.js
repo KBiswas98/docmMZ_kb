@@ -1,7 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-  View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Image,
@@ -9,6 +7,7 @@ import {
   SafeAreaView,
   FlatList,
 } from 'react-native';
+import {View, Text} from 'react-native-animatable';
 import {text} from '../../config/styles/color';
 import Icon from 'react-native-vector-icons/Feather';
 import axios from 'axios';

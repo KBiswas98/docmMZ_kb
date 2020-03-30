@@ -38,11 +38,11 @@ const storedData = loadStateFromStore();
 
 const store = createStore(
   allReducer,
-  storedData,
+  // storedData,
   // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
-store.subscribe(() => saveToLocalStore(store.getState()));
+// store.subscribe(() => saveToLocalStore(store.getState()));
 
 export default function Store() {
   return (

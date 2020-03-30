@@ -8,8 +8,10 @@ import NavigationActions from 'react-navigation/src/NavigationActions';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {View, Text} from 'react-native-animatable';
 // import {Loading} from '../loading/Loading';
+import {useDispatch, useSelector} from 'react-redux'
 
 const Setting = props => {
+  const states = useSelector(state => state.DataStoreReducer.data);
   const [Loading, setLoading] = useState(true);
   const [user, setUser] = useState({email: ''});
 
@@ -34,6 +36,9 @@ const Setting = props => {
 
   useEffect(() => {
     _getDataFromLocalStore();
+    console.log('*************************************************************************')
+    console.log(states)
+    console.log('*************************************************************************')
   }, [Loading]);
 
   return Loading ? (

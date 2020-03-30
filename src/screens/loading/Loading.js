@@ -11,7 +11,7 @@ const Loading = () => {
         justifyContent: 'center',
         alignItems: 'center',
       }}>
-      <View animation="fadeIn" iterationCount="infinite">
+      <View animation="fadeIn" iterationCount="infinite" duration={2000} easing="ease-in-out-circ">
         <Image source={require('../../assets/logo/docmz.png')} />
       </View>
     </View>

@@ -8,28 +8,29 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import {text} from '../../config/styles/color';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import IconM from 'react-native-vector-icons/MaterialIcons';
+import {text, color} from '../../config/styles/color';
+import Icon from 'react-native-vector-icons/Ionicons';
 import Icons from 'react-native-vector-icons/SimpleLineIcons';
 import axios from 'axios';
 import {Host} from '../../config/settings/Connection';
+import Loading from '../loading/Loading';
+import TopNavbar from '../../components/prefab/TopNavbar/TopNavbar';
+import {LabaledInput} from '../../components/primitive/Input/Input';
+import Button from '../../components/primitive/Button/Button';
 
 const DoctorProfile = props => {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(true);
+  const [inputs, setInputs] = useState({name: '', reason: '', contact: ''});
 
   useEffect(() => {
-    const _id = props.navigation.state.params.id
-    console.log(_id)
-    const _getData = (__id) => {
+    const _id = props.navigation.state.params.id;
+    console.log(_id);
+    const _getData = __id => {
       axios
         .get(`${Host}/doctors/getdoc/${__id}`)
         .then(result => {
           if (result.status) {
-            // console.log('-*-*-*-*----------------*********')
-            // console.log(result.data.data.appointments);
-            // console.log('-*-*-*-*----------------*********')
             setData(result.data.data);
             setLoading(false);
           }
@@ -42,19 +43,127 @@ const DoctorProfile = props => {
     _getData(_id);
   }, [loading]);
 
+  const onSubmit = () => {
+    console.log(inputs);
+  };
+
   return loading ? (
-    <Text>Loading..</Text>
+    <Loading />
   ) : (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View>
-        <TopNavBar nav={props} heading={props.heading} />
-        <ProfileBox nav={props} data={data} />
-        <MapPart nav={props} data={data} />
-        <DoctorsActivity nav={props} data={data} />
+        <View style={topNavBar_styles.header_container}>
+          <TopNavbar nav={props} mode={true} />
+        </View>
+        <View style={doctorprofile.details}>
+          <ProfileBox nav={props} data={data} />
+        </View>
+        <View>
+          <SortSchedule nav={props} data={data} />
+        </View>
+        <View style={doctorprofile.inputs}>
+          <LabaledInput
+            label="Patient Name"
+            onChange={e => setInputs({...inputs, name: e})}
+            value={inputs.name}
+          />
+          <LabaledInput
+            label="Reason for visit"
+            onChange={e => setInputs({...inputs, reason: e})}
+            value={inputs.reason}
+          />
+          <LabaledInput
+            label="Contact Number"
+            onChange={e => setInputs({...inputs, contact: e})}
+            type="number-pad"
+            value={inputs.contact}
+          />
+        </View>
+        {/* <MapPart nav={props} data={data} /> */}
+        <View>
+          <Consult fee={'2000'} currency={'$'} />
+        </View>
+        {/* <DoctorsActivity nav={props} data={data} /> */}
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            marginVertical: 20,
+          }}>
+          <Button deafult={true} title={'CANCEL'} t_text={true} onlyBorder />
+          <Button
+            deafult={true}
+            title={'CONFIRM'}
+            normal
+            shadow
+            onClick={onSubmit}
+          />
+        </View>
       </View>
     </ScrollView>
   );
 };
+
+const doctorprofile = StyleSheet.create({
+  details: {
+    marginTop: -100,
+  },
+  inputs: {
+    margin: 25,
+  },
+});
+
+const SortSchedule = props => {
+  return (
+    <View style={sortschedule.container}>
+      <View
+       onTouchStart ={() =>
+          props.nav.navigation.navigate('scheduleScreen', {
+            schedule: props.data.appointments,
+            id: props.data._id,
+          })
+        }
+        style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+        <Image
+          source={require('../../assets/icons/calander.png')}
+          style={{padding: 10, height: 35, width: 35, marginRight: 13}}
+        />
+        <View>
+          <Text style={{fontSize: 13, color: color.text_on_bg}}>
+            Friday, march 27
+          </Text>
+          <Text
+            style={{fontSize: 18, fontWeight: '600', color: color.brand_color}}>
+            10.00AM - 11.00AM
+          </Text>
+        </View>
+      </View>
+      <View>
+        <View
+          style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+          <Icon
+            name="md-checkmark-circle"
+            size={18}
+            color={color.available}
+            style={{padding: 10}}
+          />
+          <Text style={{color: color.available}}>Avaliable</Text>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const sortschedule = StyleSheet.create({
+  container: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    marginVertical: 30,
+  },
+});
 
 const TopNavBar = props => {
   return (
@@ -74,6 +183,7 @@ const TopNavBar = props => {
 
 const topNavBar_styles = StyleSheet.create({
   top_bar: {
+    paddingTop: 45,
     padding: 15,
     display: 'flex',
     flexDirection: 'row',
@@ -105,79 +215,223 @@ const topNavBar_styles = StyleSheet.create({
     height: 18,
     width: 18,
   },
+  header_container: {
+    backgroundColor: color.brand_color,
+    height: 215,
+  },
 });
 
 const ProfileBox = props => {
-  // console.log(props.data);
   return (
-    <View style={ProfileBoxStyle.container}>
-      <View style={ProfileBoxStyle.row_Box}>
+    <View style={profilebox.container}>
+      <View style={profilebox.shadow}>
         <Image
-          style={ProfileBoxStyle.profile_pic}
+          style={[profilebox.profile_pic]}
           source={require('../../assets/images/doc.jpg')}
         />
-        <View style={ProfileBoxStyle.actionHolder}>
-          <TouchableOpacity
+      </View>
+      <View style={profilebox.text}>
+        <View style={profilebox.detail_container}>
+          <Text
             style={{
-              backgroundColor: '#fdddb1',
-              borderRadius: 13,
-              marginLeft: 7,
+              fontSize: 28,
+              fontWeight: 'bold',
+              letterSpacing: 0.3,
+              color: color.white_color,
             }}>
-            <Icon
-              name="chat"
-              size={22}
-              color={'#f9a025'}
-              style={{padding: 10}}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
+            Co Eadric
+          </Text>
+          <Text
             style={{
-              backgroundColor: '#b2eaf1',
-              borderRadius: 13,
-              marginLeft: 7,
+              fontSize: 14,
+              fontWeight: '300',
+              letterSpacing: 0.2,
+              color: color.white_color,
+              opacity: 0.65,
             }}>
-            <IconM
-              name="call"
-              size={22}
-              color={'#0ab9d0'}
-              style={{padding: 10}}
+            Allergists
+          </Text>
+        </View>
+        <View style={profilebox.text_container}>
+          <View style={profilebox.about}>
+            <Image
+              source={require('../../assets/icons/patient.png')}
+              style={profilebox.icon}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#d5d4d3',
-              borderRadius: 13,
-              marginLeft: 7,
-            }}>
-            <Icon
-              name="video"
-              size={22}
-              color={'#555453'}
-              style={{padding: 10}}
+            <View style={{marginRight: 20}}>
+              <Text style={{fontSize: 15}}>1.5k</Text>
+              <Text style={{fontSize: 9, fontWeight: '300', opacity: 0.5}}>
+                Patients
+              </Text>
+            </View>
+          </View>
+          <View style={profilebox.about}>
+            <Image
+              source={require('../../assets/icons/wait.png')}
+              style={profilebox.icon}
             />
-          </TouchableOpacity>
+            <View>
+              <Text style={{fontSize: 15}}>5 Years</Text>
+              <Text style={{fontSize: 9, fontWeight: '300', opacity: 0.5}}>
+                Experience
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
-      <View
-        style={[ProfileBoxStyle.row_Box, {justifyContent: 'space-between'}]}>
-        <Text style={ProfileBoxStyle.name}>
-          {props.nav.navigation.state.params.tag}
-        </Text>
-        <Text style={ProfileBoxStyle.rating}>
-          {/* <Icons name="star" size={15} color={'#9055BA'} /> */}
-          {props.nav.navigation.state.params.rating
-            ? props.nav.navigation.state.params.rating
-            : 4.4}
-        </Text>
-      </View>
-      <Text style={ProfileBoxStyle.description}>
-        {props.nav.navigation.state.params.description
-          ? props.nav.navigation.state.params.description
-          : 'Description Textlorem missing keys for items, make sure to specify a key or id property on each item or provide a custom keyExtractor.missing keys for items, make sure to specify a key or id property on each item or provide a custom keyExtractor. '}
+    </View>
+  );
+};
+
+const profilebox = StyleSheet.create({
+  container: {
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    position: 'relative',
+    margin: 20,
+  },
+  profile_pic: {
+    height: 145,
+    width: 145,
+    borderRadius: 14,
+  },
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 10,
+  },
+  text: {
+    display: 'flex',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    marginRight: 20,
+  },
+  detail_container: {
+    display: 'flex',
+    alignItems: 'flex-end',
+  },
+  text_container: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: 45,
+  },
+  about: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  icon: {
+    height: 25,
+    width: 15,
+    marginRight: 15,
+  },
+});
+
+const Consult = props => {
+  return (
+    <View style={consult.container}>
+      <Image
+        source={require('../../assets/icons/pay.png')}
+        style={{height: 22, width: 22, marginRight: 10}}
+      />
+      <Text style={{fontSize: 14, marginRight: 10}}>Consultation Fee</Text>
+      <Text style={consult.fee}>
+        {props.currency}
+        {props.fee}
       </Text>
     </View>
   );
 };
+
+const consult = StyleSheet.create({
+  container: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  fee: {
+    color: color.brand_color,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+});
+
+// const ProfileBox = props => {
+//   // console.log(props.data);
+//   return (
+//     <View style={ProfileBoxStyle.container}>
+//       <View style={ProfileBoxStyle.row_Box}>
+//         <Image
+//           style={ProfileBoxStyle.profile_pic}
+//           source={require('../../assets/images/doc.jpg')}
+//         />
+//         <View style={ProfileBoxStyle.actionHolder}>
+//           <TouchableOpacity
+//             style={{
+//               backgroundColor: '#fdddb1',
+//               borderRadius: 13,
+//               marginLeft: 7,
+//             }}>
+//             <Icon
+//               name="chat"
+//               size={22}
+//               color={'#f9a025'}
+//               style={{padding: 10}}
+//             />
+//           </TouchableOpacity>
+//           <TouchableOpacity
+//             style={{
+//               backgroundColor: '#b2eaf1',
+//               borderRadius: 13,
+//               marginLeft: 7,
+//             }}>
+//             <IconM
+//               name="call"
+//               size={22}
+//               color={'#0ab9d0'}
+//               style={{padding: 10}}
+//             />
+//           </TouchableOpacity>
+//           <TouchableOpacity
+//             style={{
+//               backgroundColor: '#d5d4d3',
+//               borderRadius: 13,
+//               marginLeft: 7,
+//             }}>
+//             <Icon
+//               name="video"
+//               size={22}
+//               color={'#555453'}
+//               style={{padding: 10}}
+//             />
+//           </TouchableOpacity>
+//         </View>
+//       </View>
+//       <View
+//         style={[ProfileBoxStyle.row_Box, {justifyContent: 'space-between'}]}>
+//         <Text style={ProfileBoxStyle.name}>
+//           {props.nav.navigation.state.params.tag}
+//         </Text>
+//         <Text style={ProfileBoxStyle.rating}>
+//           {/* <Icons name="star" size={15} color={'#9055BA'} /> */}
+//           {props.nav.navigation.state.params.rating
+//             ? props.nav.navigation.state.params.rating
+//             : 4.4}
+//         </Text>
+//       </View>
+//       <Text style={ProfileBoxStyle.description}>
+//         {props.nav.navigation.state.params.description
+//           ? props.nav.navigation.state.params.description
+//           : 'Description Textlorem missing keys for items, make sure to specify a key or id property on each item or provide a custom keyExtractor.missing keys for items, make sure to specify a key or id property on each item or provide a custom keyExtractor. '}
+//       </Text>
+//     </View>
+//   );
+// };
 
 const ProfileBoxStyle = StyleSheet.create({
   container: {
@@ -321,14 +575,19 @@ const MapPartStyle = StyleSheet.create({
 
 const DoctorsActivity = props => {
   useEffect(() => {
-    console.log(props.data)
-  })
+    // console.log(props.data);
+  });
   return (
     <View style={DoctorsActivityStyle.container}>
       <View style={DoctorsActivityStyle.row_Box}>
         <TouchableOpacity
           style={[DoctorsActivityStyle.box, {backgroundColor: '#02b6ee'}]}
-          onPress={() => props.nav.navigation.navigate('scheduleScreen', {schedule: props.data.appointments, id: props.data._id})}>
+          onPress={() =>
+            props.nav.navigation.navigate('scheduleScreen', {
+              schedule: props.data.appointments,
+              id: props.data._id,
+            })
+          }>
           <Icon name="file-document" size={22} color={'#fff'} />
           <Text style={[DoctorsActivityStyle.text]}>List Of Schedule</Text>
         </TouchableOpacity>

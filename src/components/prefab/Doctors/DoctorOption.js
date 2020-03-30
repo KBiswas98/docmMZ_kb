@@ -55,7 +55,8 @@ const DoctorOption = props => {
         <View>
           <TouchableOpacity
             onPress={() =>
-              props.nav.navigation.navigate('doctorProfileScreen', {
+              // props.nav.navigation.navigate('doctorProfileScreen', {
+                props.nav.navigation.navigate('doctorSlider', {
                 name: props.name,
                 id: props.id,
                 tag: props.tag,

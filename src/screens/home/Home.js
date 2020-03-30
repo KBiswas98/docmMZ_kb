@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {
   Image,
-  TouchableOpacity,
   ScrollView,
   StyleSheet,
   Switch,
@@ -15,35 +14,26 @@ import DoctorOption from '../../components/prefab/Doctors/DoctorOption';
 import axios from 'axios';
 import {Host} from '../../config/settings/Connection';
 import {_checkLogin, _saveDataToStorage} from '../../config/common/Storage';
-import SearchBox from '../../components/primitive/Input/Input';
+import {SearchBox} from '../../components/primitive/Input/Input';
 import Loading from '../../screens/loading/Loading';
+import TopNavBar from '../../components/prefab/TopNavbar/TopNavbar';
+import {useSelector, useDispatch} from 'react-redux'
+import {addDataToRedux} from '../../redux/action/dataStore'
 
-// const __sortTopDoctors = (doctor1, doctor2) => {
-//   let compair = 0;
-//   if(doctor1.appointments.length < doctor2.appointments.left){
-//     compair = 1;
-//   } else if(doctor1.appointments.length > doctor2.appointments.left){
-//     compair = -1;
-//   }
-
-//   return compair;
-// }
 
 const Home = props => {
+  const dispatch = useDispatch()
   const [search, setSearch] = useState('');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [animation, setAnimation] = useState({duration: 3});
+  const [tougle, setTougle] = useState(true);
+
+  const handleChange = () => {
+    setTougle(!tougle);
+  };
 
   useEffect(() => {
-    // console.log(props);
-
-    // if (_checkLogin) {
-    //   console.log('User Logedin');
-    // } else {
-    //   console.log('Not Login');
-    // }
-
     const _getData = () => {
       axios
         .post(`${Host}/doctors/search`)
@@ -51,6 +41,7 @@ const Home = props => {
           if (result.status) {
             console.log(result.data.data);
             setData(result.data.data);
+            dispatch(addDataToRedux(result.data.data))
             setLoading(false);
           }
         })
@@ -63,11 +54,12 @@ const Home = props => {
   }, [loading]);
 
   const handelSearchInput = _text => {
+    console.log(_text);
     setSearch(_text);
   };
 
   const handelSearchSubmit = () => {
-    // console.log(search);
+    console.log('search');
     props.navigation.navigate('searchScreen', {mySearch: search});
   };
 
@@ -79,6 +71,29 @@ const Home = props => {
         showsVerticalScrollIndicator={false}
         style={{backgroundColor: color.background}}>
         <TopNavBar nav={props} />
+        <View
+          style={{
+            marginTop: -10,
+            marginLeft: 15,
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          <Text style={{fontSize: 40, fontWeight: 'bold', color: '#000'}}>
+            Doctor
+          </Text>
+          <Switch
+            thumbColor={true ? '#fff' : '#fff'}
+            trackColor={{false: color.brand_color, true: color.brand_color}}
+            onChange={handleChange}
+            checked={true}
+          />
+          {/* <Switch
+          thumbColor={true ? '#fff' : '#fff'}
+          trackColor={{false: color.brand_color, true: color.brand_color}}
+          style={topNavBar_styles.switch}
+        /> */}
+        </View>
         <View>
           <ScrollView
             style={{display: 'flex', flexDirection: 'row'}}
@@ -117,6 +132,7 @@ const Home = props => {
             onChange={handelSearchInput}
             onSubmit={handelSearchSubmit}
             icon={'search'}
+            page={0}
           />
           <Image
             source={require('../../assets/icons/setting.png')}
@@ -126,12 +142,6 @@ const Home = props => {
 
         <View>
           <Section name={'Top Doctors'} data={data} nav={props} />
-          {/* <Section
-          name={'Recently Viewed'}
-          data={data}
-          noViewAll={true}
-          nav={props}
-        /> */}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -143,72 +153,6 @@ const home_styles = StyleSheet.create({
     width: 35,
     height: 35,
     resizeMode: 'stretch',
-  },
-});
-
-const TopNavBar = props => (
-  <View style={topNavBar_styles.top_bar}>
-    <View
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        flex: 1,
-        alignItems: 'center',
-      }}>
-      <Text style={topNavBar_styles.heading}>Find a</Text>
-      <TouchableOpacity onPress={() => props.nav.navigation.navigate('Setting')}>
-        <Image
-          source={require('../../assets/icons/Menu.png')}
-          style={topNavBar_styles.icon}
-        />
-      </TouchableOpacity>
-    </View>
-    <View style={topNavBar_styles.holder}>
-      <Text style={topNavBar_styles.heading_bold}>doctor</Text>
-      <Switch
-        thumbColor={true ? '#fff' : '#fff'}
-        trackColor={{false: color.brand_color, true: color.brand_color}}
-        style={topNavBar_styles.switch}
-      />
-    </View>
-  </View>
-);
-const topNavBar_styles = StyleSheet.create({
-  switch: {
-    transform: [{scaleX: 0.8}, {scaleY: 0.8}],
-  },
-  top_bar: {
-    padding: 15,
-    paddingTop: 45,
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  heading: {
-    fontSize: 25,
-    fontWeight: '300',
-    color: '#000',
-  },
-  heading_bold: {
-    fontSize: 45,
-    fontWeight: 'bold',
-    color: text.color_0,
-  },
-  holder: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  drop_down: {
-    padding: 10,
-    paddingRight: 15,
-    paddingLeft: 15,
-    backgroundColor: text.color_2,
-    marginRight: 20,
-  },
-  icon: {
-    height: 16,
-    width: 28,
   },
 });
 
