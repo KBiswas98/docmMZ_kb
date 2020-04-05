@@ -1,6 +1,7 @@
-export const addDataToRedux = (data) => {
+export const addDataToRedux = (data, isSearch = false) => {
     return {
       type: "STORE",
-      data: data
+      data: data,
+      isSearch: isSearch
     };
   };

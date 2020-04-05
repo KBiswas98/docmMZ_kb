@@ -7,6 +7,7 @@ import {createBottomTabNavigator, createSwitchNavigator} from 'react-navigation'
 import HomePageNavigation from './HomePageNavigation';
 import SettingNavigation from './SettingNavigation';
 import NavigationActions from 'react-navigation/src/NavigationActions';
+import DoctorNavigation from './DoctorNavigaton'
 
 export default createSwitchNavigator(
   {
@@ -16,10 +17,14 @@ export default createSwitchNavigator(
     Setting: {
       screen: SettingNavigation,
     },
+    // Doctor: {
+    //   screen: DoctorNavigation
+    // }
   },
   {
     showIcon: true,
     initialRouteName: 'Home',
+    // initialRouteName: 'Doctor',
     navigationOptions: ({navigation}) => ({
       tabBarOnPress: () => {
         console.log(navigation.state.routeName);

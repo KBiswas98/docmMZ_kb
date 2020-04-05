@@ -30,7 +30,7 @@ const TopNavbar = props => {
             name="ios-arrow-round-back"
             color={color.white_color}
             size={35}
-            onPress={() => props.nav.navigation.navigate('homeScreen')}
+            onPress={() => props.nav.navigation.goBack()}
           />
         ) : (
           <Text style={topNavBar_styles.heading}>Find a</Text>

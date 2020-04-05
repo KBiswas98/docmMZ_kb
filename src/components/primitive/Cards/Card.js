@@ -3,10 +3,15 @@ import {Text, View, StyleSheet, Image} from 'react-native';
 import {text, color} from '../../../config/styles/color';
 
 class ParalaxCard extends Component {
+  componentDidMount() {
+    // console.log('--------------------------------------------------')
+    // console.log(this.props.data)
+    // console.log('--------------------------------------------------')
+  }
   render() {
     return (
       <View style={[paralaxcard.container, paralaxcard.shadow]}>
-        <ProfileBox nav={this.props} />
+        <ProfileBox nav={this.props} data={this.props.data}/>
       </View>
     );
   }
@@ -29,6 +34,7 @@ const paralaxcard = StyleSheet.create({
 });
 
 const ProfileBox = props => {
+  const data = props.data.item
   return (
     <View style={profilebox.container}>
       <View style={ [profilebox.holder]}>
@@ -46,7 +52,7 @@ const ProfileBox = props => {
               letterSpacing: 0.3,
               color: color.brand_color,
             }}>
-            Co Eadric
+            { data.basic.name.toString().substring(0,15)}
           </Text>
           <Text
             style={{

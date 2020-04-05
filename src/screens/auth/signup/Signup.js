@@ -10,11 +10,15 @@ import {
   AsyncStorage,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import IconM from 'react-native-vector-icons/MaterialIcons';
+import Icons from 'react-native-vector-icons/Ionicons';
+import NavigationActions from 'react-navigation/src/NavigationActions';
 import axios from 'axios';
 import {Host} from '../../../config/settings/Connection';
 import {useDispatch, useSelector} from 'react-redux';
 import {addUserToRedux} from '../../../redux/action/auth';
+import {color} from '../../../config/styles/color';
+import Button from '../../../components/primitive/Button/Button';
+import Switch from '../../../components/primitive/Switch/Switch';
 
 const SignUp = props => {
   const [data, setData] = useState({
@@ -24,6 +28,12 @@ const SignUp = props => {
     phone: '',
   });
   const [loading, setLoading] = useState(true);
+  const [isDoctor, setDoctor] = useState(false);
+
+  const handelSignupMode = () => {
+    console.log('click~');
+    setDoctor(!isDoctor);
+  };
 
   useEffect(() => {
     setLoading(false);
@@ -46,13 +56,13 @@ const SignUp = props => {
     setData({...data, phone: e});
   };
 
-  const _save = async (userData) => {
+  const _save = async userData => {
     await AsyncStorage.setItem('userData', JSON.stringify(userData), () => {
-      props.navigation.navigate('Setting')
+      props.navigation.navigate('Setting');
     });
   };
 
-  const handelSubmit = () => {
+  const handelPatientSubmit = () => {
     console.log(data);
 
     const config = {
@@ -65,6 +75,7 @@ const SignUp = props => {
         console.log('result');
         if (result.data.status) {
           const __data = {
+            mode: isDoctor ? 'doctor': 'patient',
             email: result.data.data.email,
             name: result.data.data.name,
             phone: result.data.data.phone,
@@ -80,22 +91,27 @@ const SignUp = props => {
         console.log(err);
       });
   };
+
+  const handelDoctorSubmit = () => {
+    console.log('DOctor submit.');
+  };
+
   return loading ? (
     <Text>Loading..</Text>
   ) : (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: color.background}}>
       <View>
-        <Icon
-          style={{position: 'absolute', margin: 15}}
-          name="arrow-left-circle"
-          color={'#000'}
-          size={25}
-          // onPress={() => props.navigation.dispatch(NavigationActions.back())}
+        <Icons
+          name="ios-arrow-round-back"
+          color={color.brand_color}
+          size={35}
           onPress={() => props.navigation.goBack(null)}
+          style={{position: 'absolute', margin: 20}}
         />
         <HeadText
           headmsg={'Create Account,'}
-          subMsg={'Sign up to get started!'}
+          subMsg={'Sign up as!'}
+          onTougle={handelSignupMode}
         />
         <InputBox
           label={'Full Name'}
@@ -117,26 +133,37 @@ const SignUp = props => {
           secureText={true}
           onChange={handelPasswordChange}
         />
-        <SubText text={'Forgot Password?'} />
-        <ActionButton
-          onClick={handelSubmit}
-          label={'SignUp'}
-          backgroundColor={'#e755cf'}
-          color={'#fff'}
-          icon={false}
-        />
-        <ActionButton
-          label={'Continue with Facebook'}
-          backgroundColor={'#e9e9ea'}
-          color={'#3b1ce7'}
-          icon={true}
-        />
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            flex: 1,
+            flexWrap: 'wrap',
+            justifyContent: 'space-around',
+            marginVertical: 50,
+          }}>
+          <Button
+            deafult={true}
+            title={'LOGIN'}
+            t_text={true}
+            onlyBorder
+            onClick={() =>
+              props.navigation.navigate(
+                'Auth',
+                {},
+                NavigationActions.navigate({routeName: 'Login'}),
+              )
+            }
+          />
+          <Button
+            deafult={true}
+            title={'SIGNUP'}
+            normal
+            shadow
+            onClick={isDoctor ? handelDoctorSubmit : handelPatientSubmit}
+          />
+        </View>
       </View>
-      <BottomText
-        text={`I'm already a member.`}
-        linkText={'Sign In'}
-        color={'#e755cf'}
-      />
     </ScrollView>
   );
 };
@@ -145,7 +172,11 @@ const HeadText = props => {
   return (
     <View style={HeadTextStyle.container}>
       <Text style={HeadTextStyle.mainmsg}>{props.headmsg}</Text>
-      <Text style={HeadTextStyle.subMsg}>{props.subMsg}</Text>
+      <View
+        style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+        <Text style={HeadTextStyle.subMsg}>{props.subMsg}</Text>
+        <Switch option1="Patient" option2="Doctor" onClick={props.onTougle} />
+      </View>
     </View>
   );
 };
@@ -153,12 +184,11 @@ const HeadText = props => {
 const HeadTextStyle = StyleSheet.create({
   container: {
     position: 'relative',
-    marginTop: 30,
+    marginTop: 80,
     paddingTop: 10,
     paddingBottom: 10,
     paddingRight: 10,
-    paddingLeft: 10,
-    marginBottom: 20,
+    marginBottom: 30,
   },
   mainmsg: {
     marginStart: 28,
@@ -169,26 +199,7 @@ const HeadTextStyle = StyleSheet.create({
     marginStart: 32,
     fontWeight: 'normal',
     fontSize: 20,
-    color: '#59595a',
-  },
-});
-
-const SubText = props => {
-  return (
-    <View style={SubTextStyle.container}>
-      <TouchableOpacity>
-        <Text style={SubTextStyle.text}>{props.text}</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const SubTextStyle = StyleSheet.create({
-  text: {
-    textAlign: 'right',
-    marginEnd: 20,
-    fontSize: 16,
-    marginBottom: 10,
+    color: '#000',
   },
 });
 
@@ -199,6 +210,7 @@ const InputBox = props => {
         <Text style={InputBoxStyle.label}>{`Enter ${props.label}`}</Text>
         <TextInput
           onChangeText={e => props.onChange(e)}
+          name={''}
           style={InputBoxStyle.input}
           secureTextEntry={props.secureText}
           placeholder={`Enter your ${props.label}`}
@@ -224,15 +236,15 @@ const InputBoxStyle = StyleSheet.create({
     marginEnd: 10,
   },
   label: {
-    fontSize: 16,
+    fontSize: 12,
     padding: 5,
     color: '#616061',
   },
   input: {
     alignItems: 'center',
     alignSelf: 'center',
-    borderColor: '#ea57d2',
-    borderRadius: 6,
+    borderColor: color.brand_color,
+    borderRadius: 100,
     borderWidth: 1,
     paddingHorizontal: 15,
     width: '100%',

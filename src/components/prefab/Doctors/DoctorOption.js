@@ -24,10 +24,12 @@ const mySchedule = [
 
 const DoctorOption = props => {
   useEffect(() => {
+    // console.log('------***-----------------')
     // console.log(props)
+    // console.log('------***-----------------')
   });
   return (
-    <View style={[doctor.samll_card, doctor.shadow]} animation="bounceInRight" duration={2000}>
+    <View style={[doctor.samll_card, doctor.shadow]} animation="bounceInRight" duration={3000} delay={1000}>
       <View>
         <Avater imageLink={null} isActive={props.isActive} />
       </View>
@@ -50,7 +52,7 @@ const DoctorOption = props => {
           <View style={{display: 'flex', flexDirection: 'row'}}>
             <Tag tag={props.tag} mode={'Link'} />
           </View>
-          <ScheduleViewer data={mySchedule} />
+          <ScheduleViewer data={props.schedule} />
         </View>
         <View>
           <TouchableOpacity
@@ -146,6 +148,7 @@ const scheduleViewer = StyleSheet.create({
   },
   available: {
     backgroundColor: color.brand_color,
+    // borderRadius: 100
   },
 });
 

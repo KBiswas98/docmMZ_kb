@@ -9,19 +9,22 @@ import {
   AsyncStorage,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import IconM from 'react-native-vector-icons/MaterialIcons';
+import Icons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import {Host} from '../../../config/settings/Connection';
 import NavigationActions from 'react-navigation/src/NavigationActions';
 import {_checkLogin, _saveDataToStorage} from '../../../config/common/Storage';
+import {color} from '../../../config/styles/color';
+import Button from '../../../components/primitive/Button/Button';
+import Switch from '../../../components/primitive/Switch/Switch';
 
 const Login = props => {
   const [data, setData] = useState({email: '', password: ''});
   const [loading, setLoading] = useState(true);
+  const [isDoctor, setDoctor] = useState(false);
 
   useEffect(() => {
     setLoading(false);
-    
   }, [loading]);
 
   const handelEmailInput = e => {
@@ -39,7 +42,12 @@ const Login = props => {
     });
   };
 
-  const _handelLogin = () => {
+  const handelLoginMode = () => {
+    console.log('click~');
+    setDoctor(!isDoctor);
+  };
+
+  const _handelPatientLogin = () => {
     console.log(data);
 
     const config = {
@@ -49,12 +57,47 @@ const Login = props => {
     axios
       .post(`${Host}/patient/authenticate`, data, config)
       .then(result => {
-        // console.log(result);
-        if (result.status) {
+        // result = JSON.parse(result)
+        console.log(result.data.status);
+        if (result.data.status) {
+          const data = result.data.user;
           const __data = {
-            email: result.data.email,
-            name: result.data.name,
-            id: result.data._id,
+            mode: isDoctor ? 'doctor' : 'patient',
+            email: data.email,
+            name: data.name,
+            id: data._id,
+          };
+          _save(__data);
+        }
+        console.log(result);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  const _handelDoctorLogin = () => {
+    console.log('Doctor');
+    console.log(data);
+
+    const config = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    axios
+      .post(`${Host}/doctors/authenticate`, data, config)
+      .then(result => {
+        // result = JSON.parse(result)
+        console.log(result);
+        if (result.data.status) {
+          const data = result.data.user;
+          const __data = {
+            mode: isDoctor ? 'doctor' : 'patient',
+            email: data.email,
+            name: data.basic.name,
+            phone: data.basic.phone,
+            id: data._id,
           };
           _save(__data);
         }
@@ -68,18 +111,22 @@ const Login = props => {
   return loading ? (
     <Text>Loading..</Text>
   ) : (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      style={{backgroundColor: color.background}}>
       <View>
-        <Icon
-          style={{position: 'absolute', margin: 15}}
-          name="arrow-left-circle"
-          color={'#000'}
-          size={25}
-          // onPress={() => props.navigation.dispatch(NavigationActions.back())}
-          // onPress={() => props.navigation.goBack(null)}
+        <Icons
+          name="ios-arrow-round-back"
+          color={color.brand_color}
+          size={35}
           onPress={() => props.navigation.navigate('Setting')}
+          style={{position: 'absolute', margin: 20}}
         />
-        <HeadText headmsg={'Welcome,'} subMsg={'Sign in to continue!'} />
+        <HeadText
+          headmsg={'Welcome,'}
+          subMsg={'Login as a '}
+          onTougle={handelLoginMode}
+        />
         <InputBox
           label={'Email Id'}
           secureText={false}
@@ -90,35 +137,38 @@ const Login = props => {
           secureText={true}
           onChange={handelPasswordInput}
         />
-        {/* <TextInput label={'Email Id'} placeholder="email" onChangeText={e => setData({...data,email: e})}/> */}
-        {/* <TextInput label={'Password'} placeholder="password" onChange={handelPasswordInput} /> */}
         <SubText text={'Forgot Password?'} />
-        <ActionButton
-          onClick={_handelLogin}
-          label={'Login'}
-          backgroundColor={'#e755cf'}
-          color={'#fff'}
-          icon={false}
-        />
-        <ActionButton
-          label={'Continue with Facebook'}
-          backgroundColor={'#e9e9ea'}
-          color={'#3b1ce7'}
-          icon={true}
-        />
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            flex: 1,
+            flexWrap: 'wrap',
+            justifyContent: 'space-around',
+            marginVertical: 50,
+          }}>
+          <Button
+            deafult={true}
+            title={'SIGNUP'}
+            t_text={true}
+            onlyBorder
+            onClick={() =>
+              props.navigation.navigate(
+                'Auth',
+                {},
+                NavigationActions.navigate({routeName: 'SignUp'}),
+              )
+            }
+          />
+          <Button
+            deafult={true}
+            title={'LOGIN'}
+            normal
+            shadow
+            onClick={isDoctor ? _handelDoctorLogin : _handelPatientLogin}
+          />
+        </View>
       </View>
-      <BottomText
-        onPress={() =>
-          props.navigation.navigate(
-            'Auth',
-            {},
-            NavigationActions.navigate({routeName: 'SignUp'}),
-          )
-        }
-        text={`I'm a new User.`}
-        linkText={'Sign Up'}
-        color={'#e755cf'}
-      />
     </ScrollView>
   );
 };
@@ -127,7 +177,11 @@ const HeadText = props => {
   return (
     <View style={HeadTextStyle.container}>
       <Text style={HeadTextStyle.mainmsg}>{props.headmsg}</Text>
-      <Text style={HeadTextStyle.subMsg}>{props.subMsg}</Text>
+      <View
+        style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+        <Text style={HeadTextStyle.subMsg}>{props.subMsg}</Text>
+        <Switch option1="Patient" option2="Doctor" onClick={props.onTougle} />
+      </View>
     </View>
   );
 };
@@ -135,12 +189,11 @@ const HeadText = props => {
 const HeadTextStyle = StyleSheet.create({
   container: {
     position: 'relative',
-    marginTop: 30,
+    marginTop: 90,
     paddingTop: 10,
     paddingBottom: 10,
     paddingRight: 10,
-    paddingLeft: 10,
-    marginBottom: 60,
+    marginBottom: 80,
   },
   mainmsg: {
     marginStart: 28,
@@ -151,7 +204,7 @@ const HeadTextStyle = StyleSheet.create({
     marginStart: 32,
     fontWeight: 'normal',
     fontSize: 20,
-    color: '#59595a',
+    color: '#000',
   },
 });
 
@@ -169,7 +222,8 @@ const SubTextStyle = StyleSheet.create({
   text: {
     textAlign: 'right',
     marginEnd: 20,
-    fontSize: 16,
+    fontSize: 12,
+    color: color.text_on_bg,
     marginBottom: 10,
   },
 });
@@ -207,123 +261,18 @@ const InputBoxStyle = StyleSheet.create({
     marginEnd: 10,
   },
   label: {
-    fontSize: 16,
+    fontSize: 12,
     padding: 5,
     color: '#616061',
   },
   input: {
     alignItems: 'center',
     alignSelf: 'center',
-    borderColor: '#ea57d2',
-    borderRadius: 6,
+    borderColor: color.brand_color,
+    borderRadius: 100,
     borderWidth: 1,
     paddingHorizontal: 15,
     width: '100%',
-  },
-});
-
-const ActionButton = props => {
-  return (
-    <View style={ActionButtonStyle.container}>
-      <TouchableOpacity
-        style={[
-          ActionButtonStyle.btn,
-          {backgroundColor: props.backgroundColor, color: props.color},
-        ]}
-        onPress={props.onClick}>
-        <View style={ActionButtonStyle.row_Box}>
-          {props.icon ? (
-            <Icon
-              style={ActionButtonStyle.icon}
-              name="facebook"
-              color={'#fff'}
-              size={16}
-            />
-          ) : null}
-          <Text style={[ActionButtonStyle.btnText, {color: props.color}]}>
-            {props.label}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const ActionButtonStyle = StyleSheet.create({
-  container: {
-    position: 'relative',
-    marginTop: 5,
-    paddingTop: 5,
-    paddingBottom: 5,
-    paddingRight: 10,
-    paddingLeft: 10,
-
-    marginEnd: 10,
-    marginStart: 10,
-  },
-  btn: {
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-  },
-  btnText: {
-    fontSize: 20,
-    fontWeight: 'normal',
-    letterSpacing: 1,
-  },
-  row_Box: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  icon: {
-    marginEnd: 5,
-    backgroundColor: '#3b1ce7',
-    padding: 2,
-    borderRadius: 2,
-  },
-});
-
-const BottomText = props => {
-  return (
-    <View style={[BottomTextStyle.container, BottomTextStyle.row_Box]}>
-      <Text style={BottomTextStyle.text}>{props.text}</Text>
-      <TouchableOpacity onPress={props.onPress}>
-        <Text
-          style={[
-            BottomTextStyle.text,
-            {color: props.color, fontWeight: 'bold'},
-          ]}>
-          {props.linkText}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const BottomTextStyle = StyleSheet.create({
-  container: {
-    position: 'relative',
-    marginTop: 5,
-    paddingTop: 5,
-    paddingBottom: 5,
-    paddingRight: 10,
-    paddingLeft: 10,
-    marginEnd: 10,
-    marginStart: 10,
-  },
-  text: {
-    textAlign: 'center',
-    fontSize: 16,
-    marginBottom: 10,
-    marginEnd: 2,
-  },
-  row_Box: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 

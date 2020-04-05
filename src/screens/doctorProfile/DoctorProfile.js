@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import {text, color} from '../../config/styles/color';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -31,6 +32,9 @@ const DoctorProfile = props => {
         .get(`${Host}/doctors/getdoc/${__id}`)
         .then(result => {
           if (result.status) {
+            console.log('--------------------------------------------------');
+            console.log(result.data.data)
+            console.log('--------------------------------------------------');
             setData(result.data.data);
             setLoading(false);
           }
@@ -50,58 +54,60 @@ const DoctorProfile = props => {
   return loading ? (
     <Loading />
   ) : (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <View>
-        <View style={topNavBar_styles.header_container}>
-          <TopNavbar nav={props} mode={true} />
-        </View>
-        <View style={doctorprofile.details}>
-          <ProfileBox nav={props} data={data} />
-        </View>
+    <SafeAreaView style={{ backgroundColor: color.background}}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View>
-          <SortSchedule nav={props} data={data} />
+          <View style={topNavBar_styles.header_container}>
+            <TopNavbar nav={props} mode={true} />
+          </View>
+          <View style={doctorprofile.details}>
+            <ProfileBox nav={props} data={data} />
+          </View>
+          <View>
+            <SortSchedule nav={props} data={data} />
+          </View>
+          <View style={doctorprofile.inputs}>
+            <LabaledInput
+              label="Patient Name"
+              onChange={e => setInputs({...inputs, name: e})}
+              value={inputs.name}
+            />
+            <LabaledInput
+              label="Reason for visit"
+              onChange={e => setInputs({...inputs, reason: e})}
+              value={inputs.reason}
+            />
+            <LabaledInput
+              label="Contact Number"
+              onChange={e => setInputs({...inputs, contact: e})}
+              type="number-pad"
+              value={inputs.contact}
+            />
+          </View>
+          {/* <MapPart nav={props} data={data} /> */}
+          <View>
+            <Consult fee={'2000'} currency={'$'} />
+          </View>
+          {/* <DoctorsActivity nav={props} data={data} /> */}
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              marginVertical: 20,
+            }}>
+            <Button deafult={true} title={'CANCEL'} t_text={true} onlyBorder />
+            <Button
+              deafult={true}
+              title={'CONFIRM'}
+              normal
+              shadow
+              onClick={onSubmit}
+            />
+          </View>
         </View>
-        <View style={doctorprofile.inputs}>
-          <LabaledInput
-            label="Patient Name"
-            onChange={e => setInputs({...inputs, name: e})}
-            value={inputs.name}
-          />
-          <LabaledInput
-            label="Reason for visit"
-            onChange={e => setInputs({...inputs, reason: e})}
-            value={inputs.reason}
-          />
-          <LabaledInput
-            label="Contact Number"
-            onChange={e => setInputs({...inputs, contact: e})}
-            type="number-pad"
-            value={inputs.contact}
-          />
-        </View>
-        {/* <MapPart nav={props} data={data} /> */}
-        <View>
-          <Consult fee={'2000'} currency={'$'} />
-        </View>
-        {/* <DoctorsActivity nav={props} data={data} /> */}
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            marginVertical: 20,
-          }}>
-          <Button deafult={true} title={'CANCEL'} t_text={true} onlyBorder />
-          <Button
-            deafult={true}
-            title={'CONFIRM'}
-            normal
-            shadow
-            onClick={onSubmit}
-          />
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -118,7 +124,7 @@ const SortSchedule = props => {
   return (
     <View style={sortschedule.container}>
       <View
-       onTouchStart ={() =>
+        onTouchStart={() =>
           props.nav.navigation.navigate('scheduleScreen', {
             schedule: props.data.appointments,
             id: props.data._id,
@@ -234,12 +240,13 @@ const ProfileBox = props => {
         <View style={profilebox.detail_container}>
           <Text
             style={{
-              fontSize: 28,
+              fontSize: 20,
+              maxWidth: 170,
               fontWeight: 'bold',
               letterSpacing: 0.3,
               color: color.white_color,
             }}>
-            Co Eadric
+            {props.data.basic.name}
           </Text>
           <Text
             style={{
@@ -291,7 +298,7 @@ const profilebox = StyleSheet.create({
     margin: 20,
   },
   pro_contain: {
-    elevation: 10
+    elevation: 10,
   },
   profile_pic: {
     height: 145,
