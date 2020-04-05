@@ -38,7 +38,7 @@ const Login = props => {
 
   const _save = async userData => {
     await AsyncStorage.setItem('userData', JSON.stringify(userData), () => {
-      props.navigation.navigate('Setting');
+      props.navigation.navigate('Home');
     });
   };
 
@@ -119,7 +119,8 @@ const Login = props => {
           name="ios-arrow-round-back"
           color={color.brand_color}
           size={35}
-          onPress={() => props.navigation.navigate('Setting')}
+          // onPress={() => props.navigation.navigate('Setting')}
+          onPress={() => props.navigation.navigate('Home')}
           style={{position: 'absolute', margin: 20}}
         />
         <HeadText
@@ -137,7 +138,7 @@ const Login = props => {
           secureText={true}
           onChange={handelPasswordInput}
         />
-        <SubText text={'Forgot Password?'} />
+        <SubText text={'Forgot Password?'} /> 
         <View
           style={{
             display: 'flex',

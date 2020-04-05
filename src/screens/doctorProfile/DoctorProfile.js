@@ -8,6 +8,7 @@ import {
   Image,
   ScrollView,
   SafeAreaView,
+  AsyncStorage,
 } from 'react-native';
 import {text, color} from '../../config/styles/color';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -18,13 +19,28 @@ import Loading from '../loading/Loading';
 import TopNavbar from '../../components/prefab/TopNavbar/TopNavbar';
 import {LabaledInput} from '../../components/primitive/Input/Input';
 import Button from '../../components/primitive/Button/Button';
+import {useSelector, useDispatch} from 'react-redux';
+import {addScheduleToRedux} from '../../redux/action/schedule';
+import NavigationActions from 'react-navigation/src/NavigationActions';
 
 const DoctorProfile = props => {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(true);
-  const [inputs, setInputs] = useState({name: '', reason: '', contact: ''});
+  const [user, setUser] = useState();
+  const [inputs, setInputs] = useState({
+    name: '',
+    reason: '',
+    contact: '',
+  });
+  const scheduleData = useSelector(state => state.ScheduleReducer.data);
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log('from redux');
+    console.log(scheduleData);
+
+    _getDataFromLocalStore();
+
     const _id = props.navigation.state.params.id;
     console.log(_id);
     const _getData = __id => {
@@ -33,8 +49,21 @@ const DoctorProfile = props => {
         .then(result => {
           if (result.status) {
             console.log('--------------------------------------------------');
-            console.log(result.data.data)
+            console.log(result.data.data);
             console.log('--------------------------------------------------');
+            dispatch(
+              addScheduleToRedux({
+                id: result.data.data.appointments[0]['_id'],
+                date: result.data.data.appointments[0]['bookedFor'].slice(
+                  0,
+                  10,
+                ),
+                time: result.data.data.appointments[0]['bookedFor'].slice(
+                  11,
+                  16,
+                ),
+              }),
+            );
             setData(result.data.data);
             setLoading(false);
           }
@@ -44,17 +73,61 @@ const DoctorProfile = props => {
         });
     };
 
+    // setInputs({
+    //   ...inputs,
+    //   id: scheduleData.id,
+    //   date: scheduleData.date,
+    //   time: scheduleData.time,
+    // });
+
     _getData(_id);
   }, [loading]);
 
+  const _getDataFromLocalStore = async () => {
+    await AsyncStorage.getItem('userData', (err, result) => {
+      // console.log(result);
+      if (result === null || result === undefined) {
+        props.navigation.navigate('Auth');
+      }
+      setUser(result)
+    });
+  };
+
   const onSubmit = () => {
-    console.log(inputs);
+    // console.log('59599595555555555555555555555555555555555555')
+    console.log(JSON.parse(user).id)
+
+    const _data = {
+      patient: JSON.parse(user).id,
+      transactionId: '0000',
+      timeSlot: scheduleData.id,
+      practise: data._id,
+    };
+
+    const config = {
+      'Content-Type': 'application/json',
+    };
+
+    console.log(_data)
+
+    axios
+      .post(`${Host}/appointment/book`, _data, config)
+      .then(result => {
+        console.log(result.data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  const changeTimeAndDate = (time, date) => {
+    setInputs({...inputs, time: time, date: date});
   };
 
   return loading ? (
     <Loading />
   ) : (
-    <SafeAreaView style={{ backgroundColor: color.background}}>
+    <SafeAreaView style={{backgroundColor: color.background}}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View>
           <View style={topNavBar_styles.header_container}>
@@ -64,7 +137,13 @@ const DoctorProfile = props => {
             <ProfileBox nav={props} data={data} />
           </View>
           <View>
-            <SortSchedule nav={props} data={data} />
+            <SortSchedule
+              nav={props}
+              data={data}
+              schedule={scheduleData}
+              changeDateTime={changeTimeAndDate}
+              input={inputs}
+            />
           </View>
           <View style={doctorprofile.inputs}>
             <LabaledInput
@@ -96,7 +175,13 @@ const DoctorProfile = props => {
               justifyContent: 'space-around',
               marginVertical: 20,
             }}>
-            <Button deafult={true} title={'CANCEL'} t_text={true} onlyBorder />
+            <Button
+              deafult={true}
+              title={'CANCEL'}
+              t_text={true}
+              onlyBorder
+              onClick={() => props.navigation.goBack()}
+            />
             <Button
               deafult={true}
               title={'CONFIRM'}
@@ -125,7 +210,7 @@ const SortSchedule = props => {
     <View style={sortschedule.container}>
       <View
         onTouchStart={() =>
-          props.nav.navigation.navigate('scheduleScreen', {
+          props.nav.navigation.navigate('scheduleScreen2', {
             schedule: props.data.appointments,
             id: props.data._id,
           })
@@ -137,11 +222,11 @@ const SortSchedule = props => {
         />
         <View>
           <Text style={{fontSize: 13, color: color.text_on_bg}}>
-            Friday, march 27
+            {props.schedule.date}
           </Text>
           <Text
             style={{fontSize: 18, fontWeight: '600', color: color.brand_color}}>
-            10.00AM - 11.00AM
+            {props.schedule.time || '10.00AM - 11.00AM'}
           </Text>
         </View>
       </View>
@@ -245,6 +330,7 @@ const ProfileBox = props => {
               fontWeight: 'bold',
               letterSpacing: 0.3,
               color: color.white_color,
+              textAlign: 'right',
             }}>
             {props.data.basic.name}
           </Text>

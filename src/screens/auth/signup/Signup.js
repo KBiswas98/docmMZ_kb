@@ -58,7 +58,7 @@ const SignUp = props => {
 
   const _save = async userData => {
     await AsyncStorage.setItem('userData', JSON.stringify(userData), () => {
-      props.navigation.navigate('Setting');
+      props.navigation.navigate('Home');
     });
   };
 

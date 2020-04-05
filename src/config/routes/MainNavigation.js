@@ -2,14 +2,28 @@ import React from 'react';
 import {View, Text} from 'react-native';
 
 import Icon from 'react-native-vector-icons/Feather';
-import {createBottomTabNavigator, createSwitchNavigator} from 'react-navigation';
+import {createBottomTabNavigator, createStackNavigator, createSwitchNavigator} from 'react-navigation';
 
 import HomePageNavigation from './HomePageNavigation';
 import SettingNavigation from './SettingNavigation';
 import NavigationActions from 'react-navigation/src/NavigationActions';
 import DoctorNavigation from './DoctorNavigaton'
 
-export default createSwitchNavigator(
+import Login from '../../screens/auth/Login/Login'
+import SignUp from '../../screens/auth/SignUp/SignUp'
+
+const AuthNavigation = createStackNavigator(
+  {
+    Login: Login,
+    SignUp: SignUp,
+  },
+  {
+    initialRouteName: 'Login',
+    headerMode: 'none'
+  },
+);
+
+export default createStackNavigator(
   {
     Home: {
       screen: HomePageNavigation,
@@ -17,27 +31,28 @@ export default createSwitchNavigator(
     Setting: {
       screen: SettingNavigation,
     },
-    // Doctor: {
-    //   screen: DoctorNavigation
-    // }
+    Auth: {
+      screen: AuthNavigation,
+    }
   },
   {
-    showIcon: true,
+    // showIcon: true,
+    headerMode: 'none',
     initialRouteName: 'Home',
     // initialRouteName: 'Doctor',
-    navigationOptions: ({navigation}) => ({
-      tabBarOnPress: () => {
-        console.log(navigation.state.routeName);
-        navigation.navigate(navigation.state.routeName);
-        if (navigation.state.routeName === 'Home') {
-          navigation.navigate(
-            'Home',
-            {},
-            NavigationActions.navigate({routeName: 'homeScreen'}),
-          );
-        }
-      },
-    }),
+    // navigationOptions: ({navigation}) => ({
+    //   tabBarOnPress: () => {
+    //     console.log(navigation.state.routeName);
+    //     navigation.navigate(navigation.state.routeName);
+    //     if (navigation.state.routeName === 'Home') {
+    //       navigation.navigate(
+    //         'Home',
+    //         {},
+    //         NavigationActions.navigate({routeName: 'homeScreen'}),
+    //       );
+    //     }
+    //   },
+    // }),
   },
 );
 

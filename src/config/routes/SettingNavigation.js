@@ -7,24 +7,14 @@ import SignUp from '../../screens/auth/SignUp/SignUp';
 import Setting from '../../screens/setting/Setting';
 import PatientProfile from '../../screens/patientProfile/PatientProfile'
 
-const AuthNavigation = createStackNavigator(
-  {
-    Login: Login,
-    SignUp: SignUp,
-  },
-  {
-    initialRouteName: 'Login',
-    headerMode: 'none'
-  },
-);
 
-const HomePageNavigation = createSwitchNavigator(
+const HomePageNavigation = createStackNavigator(
   {
     Setting: Setting,
-    Auth: AuthNavigation,
     PatientProfile: PatientProfile
   },
   {
+    headerMode: 'none',
     initialRouteName: 'Setting',
   },
 );

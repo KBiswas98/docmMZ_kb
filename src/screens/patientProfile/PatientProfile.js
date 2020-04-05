@@ -137,7 +137,7 @@ const PatientProfile = props => {
           color={'#000'}
           size={18}
           style={{position: 'absolute', left: 20, top: 20}}
-          onPress={() => props.navigation.navigate('Setting')}
+          onPress={() => props.navigation.goBack()}
         />
         <View style={profile.profile_pic}>
           <Avater width={100} />

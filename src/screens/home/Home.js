@@ -58,23 +58,17 @@ const Home = props => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [animation, setAnimation] = useState({duration: 3});
-  const [tougle, setTougle] = useState(true);
+  const [fetchDoctorsData, setFetchDoctorsData] = useState(false);
   const [mode, setMode] = useState(false);
   const [section, setSection] = useState('Top Doctors');
   const [isFetching, setFetching] = useState(true);
-  const [activeOption, setActiveOption] = useState(1)  // 1- top doc 2- search  3- spaciality
-  const [page, setPage] = useState(0)
+  const [activeOption, setActiveOption] = useState(1); // 1- top doc 2- search  3- spaciality
+  const [page, setPage] = useState(0);
   const doctors = useSelector(state => state.DataStoreReducer.data);
 
-
-
-
   const _fetchData = (search, _page) => {
-
-    const isSerching = search.length > 0
-    console.log('--------------------------------')
-    console.log(isSerching)
-    setFetching(true)
+    const isSerching = search.length > 0;
+    setFetching(true);
 
     const param = {
       filter: {
@@ -84,82 +78,19 @@ const Home = props => {
         page: _page,
         size: 5,
       },
-    }
-
-    console.log(`searchPage: ${searchPage} and page: ${_page}`)
-     axios
-    .post(`${Host}/doctors/searchlite`, param)
-    .then(result => {
-      console.log(result)
-      if (result.status) {
-        setData(result.data.data);
-        dispatch(addDataToRedux(result.data.data, isSerching));
-        setFetching(false);
-        setLoading(false);
-        isSerching ? setActiveOption(2) : setActiveOption(1)
-      }
-    })
-    .catch(err => {
-      console.log(err);
-    });
-
-  }
-
-
-  const _getSearchData = async (name) => {
-    searchPage = 0
-    setFetching(true);
-    const param = {
-      filter: {
-        name: name,
-      },
-      dataquery: {
-        page: searchPage++,
-        size: 5,
-      },
     };
 
-    await axios
-      .post(`${Host}/doctors/searchlite`, param)
-      .then(result => {
-        console.log(result)
-        if (result.status) {
-          setData(result.data.data);
-          dispatch(addDataToRedux(result.data.data, true));
-          setFetching(false);
-          setLoading(false);
-          setActiveOption(2)
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
-
-  const _getData = async () => {
-    setFetching(true);
-    const param = {
-      filter: {
-        name: '',
-      },
-      dataquery: {
-        page: page++,
-        size: 5,
-      },
-    };
-
-    await axios
+    console.log(`searchPage: ${searchPage} and page: ${_page}`);
+    axios
       .post(`${Host}/doctors/searchlite`, param)
       .then(result => {
         if (result.status) {
-          console.log('-****************************');
-          console.log(result.data.data);
-          console.log('-****************************');
           setData(result.data.data);
-          dispatch(addDataToRedux(result.data.data));
+          dispatch(addDataToRedux(result.data.data, isSerching));
           setFetching(false);
           setLoading(false);
-          setActiveOption(1)
+          setFetchDoctorsData(false)
+          isSerching ? setActiveOption(2) : setActiveOption(1);
         }
       })
       .catch(err => {
@@ -169,9 +100,9 @@ const Home = props => {
 
   useEffect(() => {
     // _getData('Top Doctors');
-    setPage(page + 1)
-    _fetchData(search,page)
-  }, [loading, setFetching]);
+    setPage(page + 1);
+    _fetchData(search, page);
+  }, []);
 
   const handelSearchInput = _text => {
     console.log(_text);
@@ -181,7 +112,7 @@ const Home = props => {
   const handelSearchSubmit = () => {
     console.log('search');
     // _getSearchData(search, 'Search');
-    _fetchData(search, 0)
+    _fetchData(search, 0);
   };
 
   const handelMode = () => {
@@ -194,17 +125,21 @@ const Home = props => {
 
   function enableSomeButton() {
     console.log('load more');
-    switch(activeOption) {
-      case 1: 
-      _fetchData(search, page)
-        setSection('Top Doctors')
-        setPage(0)
-        break;
-      case 2: 
-      _fetchData(search, page)
-        setSection('Search')
-        setPage(0)
-        break;
+    setFetchDoctorsData(true);
+    if (!fetchDoctorsData) {
+      switch (activeOption) {
+        case 1:
+          setPage(page + 1)
+          _fetchData(search, page);
+          setSection('Top Doctors');
+          // setPage(0)
+          break;
+        case 2:
+          _fetchData(search, page);
+          setSection('Search');
+          setPage(0);
+          break;
+      }
     }
   }
 
@@ -240,19 +175,7 @@ const Home = props => {
           <Text style={{fontSize: 40, fontWeight: 'bold', color: '#000'}}>
             Doctor
           </Text>
-          {/* <Switch
-            style={{marginTop: 15}}
-            thumbColor={true ? '#fff' : '#fff'}
-            trackColor={{false: color.brand_color, true: color.brand_color}}
-            onChange={handleChange}
-            checked={true}
-          /> */}
-          <Switch option1="Patient" option2="Doctor" onClick={handelMode} />
-          {/* <Switch
-          thumbColor={true ? '#fff' : '#fff'}
-          trackColor={{false: color.brand_color, true: color.brand_color}}
-          style={topNavBar_styles.switch}
-        /> */}
+          <Switch option1="Schedule" option2=" Now " onClick={handelMode} />
         </View>
         <View>
           <ScrollView
@@ -301,12 +224,7 @@ const Home = props => {
         </View>
 
         <View>
-          <Section
-            name={ section }
-            data={doctors}
-            nav={props}
-            fetch={_fetch}
-          />
+          <Section name={section} data={doctors} nav={props} fetch={_fetch} />
         </View>
         {isFetching && (
           <Text
@@ -332,66 +250,7 @@ const home_styles = StyleSheet.create({
   },
 });
 
-// const SearchBar = props => {
-//   return (
-//     <View style={search.container}>
-//       <Icon
-//         name="search"
-//         color="#fff"
-//         size={25}
-//         style={search.placeholder_icon}
-//       />
-//       <TextInput
-//         style={search.input}
-//         onChangeText={text => props.onChange(text)}
-//         placeholder="Search by on conditions, symptoms..."
-//       />
-//       <TouchableOpacity style={search.button} onPress={props.onSubmit}>
-//         <Text style={{color: '#fff', fontWeight: 'bold'}}>Show result</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-// const search = StyleSheet.create({
-//   container: {
-//     margin: 20,
-//     borderRadius: 10,
-//     backgroundColor: '#855FBF',
-//     marginTop: 20,
-//     marginBottom: 20,
-//     padding: 30,
-//     display: 'flex',
-//     alignItems: 'center',
-//   },
-//   input: {
-//     height: 40,
-//     borderColor: 'gray',
-//     // borderWidth: 1,
-//     color: '#fff',
-//     borderRadius: 5,
-//     width: '100%',
-//     paddingLeft: 40,
-//     backgroundColor: '#A16FC4',
-//   },
-//   button: {
-//     color: '#fff',
-//     marginTop: 20,
-//   },
-//   placeholder_icon: {
-//     position: 'absolute',
-//     left: 38,
-//     top: 38,
-//     opacity: 1,
-//     zIndex: 10,
-//     opacity: 0.5,
-//   },
-// });
-
 const Section = props => {
-  useEffect(() => {
-    // console.log(props.data)
-  });
-
   return (
     <View style={section.container}>
       <View style={section.header}>
@@ -420,27 +279,8 @@ const Section = props => {
               />
             );
           }}
-          onEndReachedThreshold={0.6}
-          onEndReached={e => {
-            console.log('o my god');
-          }}
           keyExtractor={(item, index) => String(index)}
         />
-
-        {/* {props.data.map((item, index) => {
-          // if (index >= 6) return;
-          return (
-            <DoctorOption
-              name={item.basic.name}
-              tag={item.specialty || 'Unknown'}
-              key={index}
-              isActive={item.isActive}
-              nav={props.nav}
-              id={item._id}
-              schedule={getRecent3(item)}
-            />
-          );
-        })} */}
       </View>
     </View>
   );

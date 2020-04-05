@@ -3,12 +3,14 @@ import {
   TouchableOpacity,
   StyleSheet,
   AsyncStorage,
+  SafeAreaView,
+  ScrollView,
 } from 'react-native';
 import NavigationActions from 'react-navigation/src/NavigationActions';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {View, Text} from 'react-native-animatable';
-// import {Loading} from '../loading/Loading';
-import {useDispatch, useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux';
+import {color} from '../../config/styles/color';
 
 const Setting = props => {
   const states = useSelector(state => state.DataStoreReducer.data);
@@ -36,22 +38,39 @@ const Setting = props => {
 
   useEffect(() => {
     _getDataFromLocalStore();
-    console.log('*************************************************************************')
-    console.log(states)
-    console.log('*************************************************************************')
+    console.log(
+      '*************************************************************************',
+    );
+    console.log(states);
+    console.log(
+      '*************************************************************************',
+    );
   }, [Loading]);
 
   return Loading ? (
     <Text>Loading...</Text>
   ) : (
-    <View style={{marginTop: 20}}  animation="bounceInRight" duration={2000} >
-      <Options nav={props} type={user.email.length > 2 ? 'show' : 'hide'} />
-      <Account
-        logout={_logout}
-        nav={props}
-        type={user.email.length > 2 ? 'logout' : 'none'}
-      />
-    </View>
+    <SafeAreaView
+      style={{backgroundColor: color.background, display: 'flex', flex: 1}}
+      animation="bounceInRight"
+      duration={2000}>
+      <ScrollView>
+        <View style={{ paddingBottom: 10, marginLeft: 30, marginTop: 30}}>
+          <Icon
+            name="ios-arrow-round-back"
+            color={color.brand_color}
+            size={35}
+            onPress={() => props.navigation.navigate('Home')}
+          />
+        </View>
+        <Options nav={props} type={user.email.length > 2 ? 'show' : 'hide'} />
+        <Account
+          logout={_logout}
+          nav={props}
+          type={user.email.length > 2 ? 'logout' : 'none'}
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -63,31 +82,34 @@ const Options = props => {
         name={'Appiontment'}
         onClick={() => props.type !== 'hide' && console.log('after loged in.')}
       />
-      <Option
+      {/* <Option
         icon={'ios-basket'}
         name={'Orders'}
         onClick={() => props.type !== 'hide' && console.log('after loged in.')}
-      />
-      <Option
+      /> */}
+      {/* <Option
         icon={'ios-chatboxes'}
         name={'Consultations'}
         onClick={() => props.type !== 'hide' && console.log('after loged in.')}
-      />
-      <Option
+      /> */}
+      {/* <Option
         icon={'ios-contact'}
         name={'My Doctors'}
         onClick={() => props.type !== 'hide' && console.log('after loged in.')}
-      />
+      /> */}
       <Option
         icon={'ios-person'}
         name={'My Profile'}
-        onClick={() => props.type !== 'hide' && props.nav.navigation.navigate('PatientProfile')}
+        onClick={() =>
+          props.type !== 'hide' &&
+          props.nav.navigation.navigate('PatientProfile')
+        }
       />
-      <Option
+      {/* <Option
         icon={'ios-albums'}
         name={'Medical Records'}
         onClick={() => props.type !== 'hide' && console.log('after loged in.')}
-      />
+      /> */}
     </View>
   );
 };
@@ -98,8 +120,8 @@ const Option = props => {
       <Icon
         style={option_style.icon}
         name={props.icon}
-        color={'#000'}
-        size={22}
+        color={color.brand_color}
+        size={30}
       />
       <Text>{props.name}</Text>
     </TouchableOpacity>

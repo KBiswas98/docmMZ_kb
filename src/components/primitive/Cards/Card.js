@@ -4,9 +4,9 @@ import {text, color} from '../../../config/styles/color';
 
 class ParalaxCard extends Component {
   componentDidMount() {
-    // console.log('--------------------------------------------------')
-    // console.log(this.props.data)
-    // console.log('--------------------------------------------------')
+    console.log('--------------------------------------------------')
+    console.log(this.props.data)
+    console.log('--------------------------------------------------')
   }
   render() {
     return (
@@ -33,8 +33,16 @@ const paralaxcard = StyleSheet.create({
   },
 });
 
+/*
+ 1. name
+ 2. pic
+ 3. specialty
+
+ */
+
+
 const ProfileBox = props => {
-  const data = props.data.item
+  const data = props.data.item === undefined ? props.data : props.data.item ;
   return (
     <View style={profilebox.container}>
       <View style={ [profilebox.holder]}>
