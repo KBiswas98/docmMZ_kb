@@ -22,6 +22,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import {addDataToRedux} from '../../redux/action/dataStore';
 import Switch from '../../components/primitive/Switch/Switch';
 import TButton from '../../components/prefab/Buttons/TButton';
+import {fetchDoctors} from '../../redux/action/doctoreAction'
 
 const getRecent3 = item => {
   const s = new Date();
@@ -71,16 +72,6 @@ const Home = props => {
     const isSerching = search.length > 0;
     setFetching(true);
 
-    // const param = {
-    //   filter: {
-    //     name: search,
-    //   },
-    //   dataquery: {
-    //     page: _page,
-    //     size: 5,
-    //   },
-    // };
-
     const param = {
       match: JSON.stringify({is_superDoc: mode}),
       pageNo: _page.toString(),
@@ -122,6 +113,7 @@ const Home = props => {
   };
 
   useEffect(() => {
+    dispatch(fetchDoctors())
     // _getData('Top Doctors');
     _getDataFromLocalStore();
     setPage(page + 1);
