@@ -26,6 +26,11 @@ const SignUp = props => {
     password: '',
     name: '',
     phone: '',
+    registration_id: '',
+    specialty: '',
+    city: '',
+    state: '',
+    country: '',
   });
   const [loading, setLoading] = useState(true);
   const [isDoctor, setDoctor] = useState(false);
@@ -56,9 +61,30 @@ const SignUp = props => {
     setData({...data, phone: e});
   };
 
+  const handelRegistrationChange = e => {
+    setData({...data, registration_id: e});
+  };
+
+  const handelSpecialty = e => {
+    setData({...data, specialty: e});
+  };
+
+  const handelCityChange = e => {
+    setData({...data, city: e});
+  };
+  const handelStateChange = e => {
+    setData({...data, state: e});
+  };
+
+  const handelCountryChange = e => {
+    setData({...data, country: e});
+  };
+
   const _save = async userData => {
     await AsyncStorage.setItem('userData', JSON.stringify(userData), () => {
-      props.navigation.navigate('Home');
+      isDoctor
+        ? props.navigation.navigate('Doctor')
+        : props.navigation.navigate('Home');
     });
   };
 
@@ -75,7 +101,7 @@ const SignUp = props => {
         console.log('result');
         if (result.data.status) {
           const __data = {
-            mode: isDoctor ? 'doctor': 'patient',
+            mode: isDoctor ? 'doctor' : 'patient',
             email: result.data.data.email,
             name: result.data.data.name,
             phone: result.data.data.phone,
@@ -94,12 +120,54 @@ const SignUp = props => {
 
   const handelDoctorSubmit = () => {
     console.log('DOctor submit.');
+
+    const config = {
+      'Content-Type': 'application/json',
+    };
+
+    const _data = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      phone: data.phone,
+      registration_number: data.registration_id,
+      specialty: data.specialty,
+      city: data.city,
+      state: data.state,
+      country: data.country,
+      basic: JSON.stringify({}),
+    };
+
+    console.log(_data);
+    axios
+      .post(`${Host}/doctors/register`, _data, config)
+      .then(result => {
+        console.log(result);
+        if (result.data.status) {
+          const __data = {
+            mode: 'doctor',
+            email: result.data.data.email,
+            name: result.data.data.name,
+            phone: result.data.data.phone,
+            id: result.data.data._id,
+          };
+          _save(__data);
+
+          // dispatch(addUserToRedux(data))
+        }
+        console.log(result.data.status);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   return loading ? (
     <Text>Loading..</Text>
   ) : (
-    <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: color.background}}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      style={{backgroundColor: color.background}}>
       <View>
         <Icons
           name="ios-arrow-round-back"
@@ -133,6 +201,35 @@ const SignUp = props => {
           secureText={true}
           onChange={handelPasswordChange}
         />
+        {isDoctor && (
+          <React.Fragment>
+            <InputBox
+              label={'Registration Number'}
+              secureText={false}
+              onChange={handelRegistrationChange}
+            />
+            <InputBox
+              label={'Specialty'}
+              secureText={false}
+              onChange={handelSpecialty}
+            />
+            <InputBox
+              label={'City'}
+              secureText={false}
+              onChange={handelCityChange}
+            />
+            <InputBox
+              label={'State'}
+              secureText={false}
+              onChange={handelStateChange}
+            />
+            <InputBox
+              label={'Country'}
+              secureText={false}
+              onChange={handelCountryChange}
+            />
+          </React.Fragment>
+        )}
         <View
           style={{
             display: 'flex',

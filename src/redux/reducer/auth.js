@@ -1,8 +1,6 @@
 const initialState = {
-  email: '',
-  phoneNo: '',
-  name: '',
-  password: '',
+  data: [],
+  fullData: []
 };
 
 const AuthReducer = (state = initialState, action) => {
@@ -12,10 +10,15 @@ const AuthReducer = (state = initialState, action) => {
       console.log(action);
       return {
         ...state,
-        email: action.email,
-        phoneNo: action.phone,
-        name: action.name,
-        password: action.password,
+        data: action.data,
+      };
+
+    case 'FULLDATA':
+      console.log('Authenticated.vvvvv');
+      console.log(action);
+      return {
+        ...state,
+        fullData: action.data,
       };
     default:
       return state;

@@ -17,6 +17,9 @@ const Switch = props => {
       style={[
         switchs.container,
         props.style,
+        props.mode && {
+          backgroundColor:color.white_color
+        },
         isNow
           ? {flexDirection: 'row', width: props.option1.length * 12.5}
           : {
@@ -32,6 +35,7 @@ const Switch = props => {
         style={[
           switchs.pointer,
           !isNow && {backgroundColor: color.brand_color},
+          props.mode && { backgroundColor: color.brand_color}
         ]}></TouchableOpacity>
       <Text
         style={[
@@ -44,6 +48,7 @@ const Switch = props => {
             textTransform: 'capitalize',
           },
           !isNow && {color: color.brand_color},
+          props.mode && { color: color.brand_color}
         ]}>
         {isNow ? props.option1 || 'now' : props.option2 ||'schedule'}
       </Text>

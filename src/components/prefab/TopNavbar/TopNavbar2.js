@@ -9,9 +9,8 @@ import {
 } from 'react-native';
 import {text, color} from '../../../config/styles/color';
 import Icon from 'react-native-vector-icons/Ionicons';
-import NavigationActions from 'react-navigation/src/NavigationActions';
 
-const TopNavbar = props => {
+const TopNavbar2 = (props) => {
   useEffect(() => {
     // console.log(props);
   });
@@ -26,25 +25,26 @@ const TopNavbar = props => {
           flex: 1,
           alignItems: 'center',
         }}>
-        {props.mode ? (
-          <Icon
-            name="ios-arrow-round-back"
-            color={color.white_color}
-            size={35}
-            onPress={() => props.nav.navigation.goBack()}
-          />
-        ) : (
-          <Text style={topNavBar_styles.heading}>Find a</Text>
-        )}
+        <Icon
+          name="ios-arrow-round-back"
+          color={color.brand_color}
+          size={35}
+          onPress={() => props.nav.navigation.goBack(null)}
+        />
+
         <TouchableOpacity
-          onPress={() => props.nav.navigation.navigate('settings')}>
+          onPress={() => props.nav.navigation.navigate('Setting')}>
           <Image
-            source={props.mode ? require('../../../assets/icons/Menu_white.png') : require('../../../assets/icons/Menu.png')}
+            source={
+              props.mode
+                ? require('../../../assets/icons/Menu_white.png')
+                : require('../../../assets/icons/Menu.png')
+            }
             style={topNavBar_styles.icon}
           />
         </TouchableOpacity>
       </View>
-    </View> 
+    </View>
   );
 };
 
@@ -85,4 +85,4 @@ const topNavBar_styles = StyleSheet.create({
     width: 28,
   },
 });
-export default TopNavbar;
+export default React.memo(TopNavbar2);

@@ -28,7 +28,7 @@ const DoctorProfile = props => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState();
   const [inputs, setInputs] = useState({
-    name: '',
+    name: 'no Name',
     reason: '',
     contact: '',
   });
@@ -48,20 +48,15 @@ const DoctorProfile = props => {
         .get(`${Host}/doctors/getdoc/${__id}`)
         .then(result => {
           if (result.status) {
-            console.log('--------------------------------------------------');
-            console.log(result.data.data);
-            console.log('--------------------------------------------------');
+            let first = result.data.data.appointments.find(
+              item => item.booked === false,
+            );
+
             dispatch(
               addScheduleToRedux({
-                id: result.data.data.appointments[0]['_id'],
-                date: result.data.data.appointments[0]['bookedFor'].slice(
-                  0,
-                  10,
-                ),
-                time: result.data.data.appointments[0]['bookedFor'].slice(
-                  11,
-                  16,
-                ),
+                id: first['_id'],
+                date: first['bookedFor'].slice(0, 10),
+                time: first['bookedFor'].slice(11, 16),
               }),
             );
             setData(result.data.data);
@@ -73,13 +68,6 @@ const DoctorProfile = props => {
         });
     };
 
-    // setInputs({
-    //   ...inputs,
-    //   id: scheduleData.id,
-    //   date: scheduleData.date,
-    //   time: scheduleData.time,
-    // });
-
     _getData(_id);
   }, [loading]);
 
@@ -89,13 +77,12 @@ const DoctorProfile = props => {
       if (result === null || result === undefined) {
         props.navigation.navigate('Auth');
       }
-      setUser(result)
+      setUser(result);
     });
   };
 
   const onSubmit = () => {
-    // console.log('59599595555555555555555555555555555555555555')
-    console.log(JSON.parse(user).id)
+    console.log(JSON.parse(user).id);
 
     const _data = {
       patient: JSON.parse(user).id,
@@ -108,12 +95,18 @@ const DoctorProfile = props => {
       'Content-Type': 'application/json',
     };
 
-    console.log(_data)
+    console.log(_data);
 
     axios
       .post(`${Host}/appointment/book`, _data, config)
       .then(result => {
         console.log(result.data);
+        props.navigation.navigate('appointmentSuccess', {
+          name: inputs.name,
+          time: scheduleData.time,
+          date: scheduleData.date,
+          doctorName: data.basic.name
+        })
       })
       .catch(err => {
         console.log(err);

@@ -6,12 +6,14 @@ import Login from '../../screens/auth/Login/Login';
 import SignUp from '../../screens/auth/SignUp/SignUp';
 import Setting from '../../screens/setting/Setting';
 import PatientProfile from '../../screens/patientProfile/PatientProfile'
+import Appointment from '../../screens/appointment/Appointment'
 
 
-const HomePageNavigation = createStackNavigator(
+const SettingNavigation = createStackNavigator(
   {
     Setting: Setting,
-    PatientProfile: PatientProfile
+    PatientProfile: PatientProfile,
+    Appointment: Appointment
   },
   {
     headerMode: 'none',
@@ -19,4 +21,4 @@ const HomePageNavigation = createStackNavigator(
   },
 );
 
-export default HomePageNavigation;
+export default SettingNavigation;

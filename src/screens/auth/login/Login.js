@@ -18,7 +18,7 @@ import {color} from '../../../config/styles/color';
 import Button from '../../../components/primitive/Button/Button';
 import Switch from '../../../components/primitive/Switch/Switch';
 
-const Login = props => {
+const Login = (props) => {
   const [data, setData] = useState({email: '', password: ''});
   const [loading, setLoading] = useState(true);
   const [isDoctor, setDoctor] = useState(false);
@@ -27,18 +27,20 @@ const Login = props => {
     setLoading(false);
   }, [loading]);
 
-  const handelEmailInput = e => {
+  const handelEmailInput = (e) => {
     console.log(e.target);
     setData({...data, email: e});
   };
 
-  const handelPasswordInput = e => {
+  const handelPasswordInput = (e) => {
     setData({...data, password: e});
   };
 
-  const _save = async userData => {
+  const _save = async (userData) => {
     await AsyncStorage.setItem('userData', JSON.stringify(userData), () => {
-      props.navigation.navigate('Home');
+      isDoctor
+        ? props.navigation.navigate('Doctor')
+        : props.navigation.navigate('Home');
     });
   };
 
@@ -56,13 +58,13 @@ const Login = props => {
 
     axios
       .post(`${Host}/patient/authenticate`, data, config)
-      .then(result => {
+      .then((result) => {
         // result = JSON.parse(result)
         console.log(result.data.status);
         if (result.data.status) {
           const data = result.data.user;
           const __data = {
-            mode: isDoctor ? 'doctor' : 'patient',
+            mode: 'patient',
             email: data.email,
             name: data.name,
             id: data._id,
@@ -71,7 +73,7 @@ const Login = props => {
         }
         console.log(result);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -81,19 +83,22 @@ const Login = props => {
     console.log(data);
 
     const config = {
-      Accept: 'application/json',
       'Content-Type': 'application/json',
+    };
+
+    const _data = {
+      email: data.email,
+      password: data.password,
     };
 
     axios
       .post(`${Host}/doctors/authenticate`, data, config)
-      .then(result => {
-        // result = JSON.parse(result)
+      .then((result) => {
         console.log(result);
         if (result.data.status) {
           const data = result.data.user;
           const __data = {
-            mode: isDoctor ? 'doctor' : 'patient',
+            mode: 'doctor',
             email: data.email,
             name: data.basic.name,
             phone: data.basic.phone,
@@ -103,7 +108,7 @@ const Login = props => {
         }
         console.log(result);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -138,7 +143,7 @@ const Login = props => {
           secureText={true}
           onChange={handelPasswordInput}
         />
-        <SubText text={'Forgot Password?'} /> 
+        <SubText text={'Forgot Password?'} />
         <View
           style={{
             display: 'flex',
@@ -174,7 +179,7 @@ const Login = props => {
   );
 };
 
-const HeadText = props => {
+const HeadText = (props) => {
   return (
     <View style={HeadTextStyle.container}>
       <Text style={HeadTextStyle.mainmsg}>{props.headmsg}</Text>
@@ -209,7 +214,7 @@ const HeadTextStyle = StyleSheet.create({
   },
 });
 
-const SubText = props => {
+const SubText = (props) => {
   return (
     <View style={SubTextStyle.container}>
       <TouchableOpacity>
@@ -229,13 +234,13 @@ const SubTextStyle = StyleSheet.create({
   },
 });
 
-const InputBox = props => {
+const InputBox = (props) => {
   return (
     <View style={InputBoxStyle.container}>
       <View style={InputBoxStyle.inputHolder}>
         <Text style={InputBoxStyle.label}>{`Enter ${props.label}`}</Text>
         <TextInput
-          onChangeText={e => props.onChange(e)}
+          onChangeText={(e) => props.onChange(e)}
           name={''}
           style={InputBoxStyle.input}
           secureTextEntry={props.secureText}

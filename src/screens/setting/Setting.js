@@ -29,6 +29,19 @@ const Setting = props => {
     });
   };
 
+    const _checkUser = async () => {
+    await AsyncStorage.getItem('userData', (err, result) => {
+      console.log('**********')
+      console.log(result);
+      if (result !== null) {
+        // props.navigation.navigate('Auth');
+        // setUser(result);
+        result = JSON.parse(result)
+        if(result.mode.localeCompare('doctor') === 0) props.navigation.navigate('Doctor');
+      }
+    });
+  };
+
   const _logout = async () => {
     setUser({email: ''});
     await AsyncStorage.clear(() => {
@@ -37,6 +50,7 @@ const Setting = props => {
   };
 
   useEffect(() => {
+    _checkUser()
     _getDataFromLocalStore();
     console.log(
       '*************************************************************************',
@@ -60,7 +74,7 @@ const Setting = props => {
             name="ios-arrow-round-back"
             color={color.brand_color}
             size={35}
-            onPress={() => props.navigation.navigate('Home')}
+            onPress={() => props.navigation.goBack(null)}
           />
         </View>
         <Options nav={props} type={user.email.length > 2 ? 'show' : 'hide'} />
@@ -80,7 +94,7 @@ const Options = props => {
       <Option
         icon={'ios-archive'}
         name={'Appiontment'}
-        onClick={() => props.type !== 'hide' && console.log('after loged in.')}
+        onClick={() => props.type !== 'hide' && props.nav.navigation.navigate('Appointment')}
       />
       {/* <Option
         icon={'ios-basket'}
