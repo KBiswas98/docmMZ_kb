@@ -11,7 +11,7 @@ const DoctorReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                doctors : action.payload,
+                doctors: action.isSearching ? [...action.payload] : [...state.doctors, ...action.payload],
                 error: []
             }
         case 'GETTING_DOCTORS': 

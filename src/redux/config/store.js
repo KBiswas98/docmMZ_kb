@@ -5,13 +5,30 @@ import thunk from 'redux-thunk';
 import {logger} from 'redux-logger'
 import allReducer from '../reducer';
 import MainNavigation from '../../config/routes/MainNavigation';
+import {persistStore, persistReducer} from 'redux-persist'
+import {PersistGate} from 'redux-persist/integration/react'
+// import AsyncStorage from '@react-native-community/async-storage'
+import autoMergeLevel12 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
+import { AsyncStorage } from 'react-native';
 
-const store = createStore(allReducer, applyMiddleware(thunk, logger));
+
+const persistConfig = {
+    key: 'root',
+    storage: AsyncStorage,
+}
+
+const pReducer = persistReducer(persistConfig, allReducer)
+
+const _store = createStore(pReducer, applyMiddleware(thunk, logger));
+const store = persistStore(_store)
+
 
 export default function Store() {
   return (
-    <Provider store={store}>
-      <MainNavigation />
+    <Provider store={ _store}>
+        <PersistGate loading={null} persistor={store}>
+            <MainNavigation />
+        </PersistGate>
     </Provider>
   );
 }

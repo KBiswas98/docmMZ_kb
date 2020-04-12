@@ -16,7 +16,7 @@ import TopNavbar from '../../components/prefab/TopNavbar/TopNavbar';
 import DoctorProfile from '../../components/prefab/DoctorProfile/DoctorProfile';
 
 const DoctorSlide = props => {
-  const data = useSelector(state => state.DataStoreReducer.data);
+  const data = useSelector(state => state.DoctorReducer.doctors);
 
   useEffect(() => {
     // console.log('--------------------------------------------------');
@@ -35,7 +35,7 @@ const DoctorSlide = props => {
           style={slider.doctor_container}
           showsHorizontalScrollIndicator={false}> */}
         <FlatList
-          initialNumToRender={3}
+        //   initialNumToRender={3}
           style={slider.doctor_container}
           horizontal={true}
           data={data}

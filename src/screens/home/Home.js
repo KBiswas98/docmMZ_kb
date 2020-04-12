@@ -10,23 +10,19 @@ import {
 import {View, Text} from 'react-native-animatable';
 import {text, color} from '../../config/styles/color';
 import Catagory from '../../components/prefab/Catagory/Catagory';
-import Icon from 'react-native-vector-icons/Feather';
 import DoctorOption from '../../components/prefab/Doctors/DoctorOption';
-import axios from 'axios';
-import {Host} from '../../config/settings/Connection';
 import {_checkLogin, _saveDataToStorage} from '../../config/common/Storage';
 import {SearchBox} from '../../components/primitive/Input/Input';
 import Loading from '../../screens/loading/Loading';
 import TopNavBar from '../../components/prefab/TopNavbar/TopNavbar';
 import {useSelector, useDispatch} from 'react-redux';
-import {addDataToRedux} from '../../redux/action/dataStore';
 import Switch from '../../components/primitive/Switch/Switch';
 import TButton from '../../components/prefab/Buttons/TButton';
-import {fetchDoctors} from '../../redux/action/doctoreAction'
+import {fetchDoctors, fetchDoctorLite, searchDoctorLite} from '../../redux/action/doctoreAction'
 
-const getRecent3 = item => {
+const getRecent3 = output => {
   const s = new Date();
-  let pp = item.output.filter(
+  let pp = output.filter(
     // items => new Date().toISOString() < items.bookedFor,
     // items => items.bookedFor < '2020-04-09T23:59:35.604Z',
     items =>
@@ -50,53 +46,18 @@ const getRecent3 = item => {
 
   return res.length < 3 ? mm : res;
 };
-let count = 1;
-let searchPage = 0;
-// let page = 0;
 
 const Home = props => {
   const dispatch = useDispatch();
   const [search, setSearch] = useState('');
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [animation, setAnimation] = useState({duration: 3});
-  const [fetchDoctorsData, setFetchDoctorsData] = useState(false);
   const [mode, setMode] = useState(false);
   const [section, setSection] = useState('Top Doctors');
-  const [isFetching, setFetching] = useState(true);
-  const [activeOption, setActiveOption] = useState(1); // 1- top doc 2- search  3- spaciality
   const [page, setPage] = useState(0);
-  const doctors = useSelector(state => state.DataStoreReducer.data);
+  const [searchPageIndex, setSearchPageIndex] = useState(0)
+  
+  const doctors = useSelector(state => state.DoctorReducer);
+  var tougl = false;
 
-  const _fetchData = (search, _page) => {
-    const isSerching = search.length > 0;
-    setFetching(true);
-
-    const param = {
-      match: JSON.stringify({is_superDoc: mode}),
-      pageNo: _page.toString(),
-      size: '5',
-      name: search.toString().split(' ')[0],
-    };
-
-    console.log(`searchPage: ${searchPage} and page: ${_page}`);
-    axios
-      .post(`${Host}/doctors/searchlite`, param)
-      .then(result => {
-        if (result.status) {
-          setData(result.data.data);
-          dispatch(addDataToRedux(result.data.data, isSerching));
-          _page === 0 && mode && dispatch(addDataToRedux([], isSerching))
-          setFetching(false);
-          setLoading(false);
-          setFetchDoctorsData(false);
-          isSerching ? setActiveOption(2) : setActiveOption(1);
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
 
   const _getDataFromLocalStore = async () => {
     await AsyncStorage.getItem('userData', (err, result) => {
@@ -113,12 +74,9 @@ const Home = props => {
   };
 
   useEffect(() => {
-    dispatch(fetchDoctors())
-    // _getData('Top Doctors');
+      enableSomeButton()
     _getDataFromLocalStore();
-    setPage(page + 1);
-    _fetchData(search, page);
-  }, [mode]);
+  }, []);
 
   const handelSearchInput = _text => {
     console.log(_text);
@@ -126,16 +84,13 @@ const Home = props => {
   };
 
   const handelSearchSubmit = () => {
-    // console.log('search');
-    // _getSearchData(search, 'Search');
-    _fetchData(search, 0);
+    enableSomeButton();
   };
 
   const handelMode = () => {
+      enableSomeButton()
     setMode(!mode);
-    console.log('----------------------')
-    console.log(mode)
-    _fetchData(search, 0);
+    tougl = !tougl
   };
 
   const _fetch = () => {
@@ -143,23 +98,12 @@ const Home = props => {
   };
 
   function enableSomeButton() {
-    console.log('load more');
-    setFetchDoctorsData(true);
-    if (!fetchDoctorsData) {
-      switch (activeOption) {
-        case 1:
-          setPage(page + 1);
-          _fetchData(search, page);
-          setSection('Top Doctors');
-          // setPage(0)
-          break;
-        case 2:
-          _fetchData(search, page);
-          setSection('Search');
-          setPage(0);
-          break;
-      }
-    }
+
+    let page_index = search.length === 0 ? page : searchPageIndex
+    dispatch(fetchDoctorLite(search,page_index,mode))
+    search.length === 0 ? setPage(page + 1) : setSearchPageIndex(searchPageIndex)
+
+    
   }
 
   const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
@@ -170,10 +114,7 @@ const Home = props => {
     );
   };
 
-  return loading ? (
-    <Loading />
-  ) : (
-    <SafeAreaView
+  return <SafeAreaView
       style={{backgroundColor: color.background, display: 'flex', flex: 1}}>
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -244,9 +185,9 @@ const Home = props => {
         </View>
 
         <View>
-          <Section name={section} data={doctors} nav={props} fetch={_fetch} />
+          <Section name={section} data={doctors.doctors} nav={props} fetch={_fetch} />
         </View>
-        {isFetching && (
+        {(doctors.loading) && (
           <Text
             style={{
               textAlign: 'center',
@@ -257,9 +198,20 @@ const Home = props => {
             Fetching doctors..
           </Text>
         )}
+        {(!doctors.loading && doctors.doctors.length <= 0) && (
+          <Text
+            style={{
+              textAlign: 'center',
+              fontSize: 11,
+              fontWeight: '300',
+              marginBottom: 20,
+            }}>
+            no doctor available.
+          </Text>
+        )}
       </ScrollView>
     </SafeAreaView>
-  );
+  
 };
 
 const home_styles = StyleSheet.create({
@@ -299,7 +251,7 @@ class Section extends PureComponent {
                   isActive={item.isActive}
                   nav={this.props.nav}
                   id={item.item._id}
-                  schedule={getRecent3(item.item)}
+                  schedule={getRecent3(item.item.output)}
                 />
               );
             }}
@@ -311,41 +263,6 @@ class Section extends PureComponent {
   }
 }
 
-// const Section = props => {
-//   return (
-//     <View style={section.container}>
-//       <View style={section.header}>
-//         <Text style={section.heading}>{props.name}</Text>
-//         <TButton
-//           title={'view all'}
-//           onClick={() =>
-//             props.nav.navigation.navigate('doctorSlider', {name: props.name})
-//           }
-//         />
-//       </View>
-//       <View style={section.doc_container}>
-//         <FlatList
-//           data={props.data}
-//           renderItem={(item, index) => {
-//             console.log(item.item._id);
-//             return (
-//               <DoctorOption
-//                 name={item.item.basic.name}
-//                 tag={item.item.specialty || 'Unknown'}
-//                 key={item.item._id}
-//                 isActive={item.isActive}
-//                 nav={props.nav}
-//                 id={item.item._id}
-//                 schedule={getRecent3(item.item)}
-//               />
-//             );
-//           }}
-//           keyExtractor={(item, index) => String(index)}
-//         />
-//       </View>
-//     </View>
-//   );
-// };
 const section = StyleSheet.create({
   container: {
     margin: 15,
