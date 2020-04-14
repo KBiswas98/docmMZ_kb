@@ -5,7 +5,7 @@ import {
   StyleSheet,
   SafeAreaView,
   FlatList,
-  AsyncStorage,
+  ActivityIndicator,
 } from 'react-native';
 import {View, Text} from 'react-native-animatable';
 import {text, color} from '../../config/styles/color';
@@ -56,26 +56,17 @@ const Home = props => {
   const [searchPageIndex, setSearchPageIndex] = useState(0)
   
   const doctors = useSelector(state => state.DoctorReducer);
+  const {isLogedin, isDoctor} = useSelector(state => state.AuthReducer)
   var tougl = false;
 
 
-  const _getDataFromLocalStore = async () => {
-    await AsyncStorage.getItem('userData', (err, result) => {
-      // console.log('**********');
-      // console.log(result);
-      if (result !== null) {
-        // props.navigation.navigate('Auth');
-        // setUser(result);
-        result = JSON.parse(result);
-        if (result.mode.localeCompare('doctor') === 0)
-          props.navigation.navigate('Doctor');
-      }
-    });
-  };
 
   useEffect(() => {
-      enableSomeButton()
-    _getDataFromLocalStore();
+    (isDoctor && isLogedin) && props.navigation.navigate('Doctor')
+    console.log(` isDoctor: ${isDoctor} and isLogedin: ${isLogedin}`)
+
+    enableSomeButton()
+
   }, []);
 
   const handelSearchInput = _text => {
@@ -188,15 +179,16 @@ const Home = props => {
           <Section name={section} data={doctors.doctors} nav={props} fetch={_fetch} />
         </View>
         {(doctors.loading) && (
-          <Text
-            style={{
-              textAlign: 'center',
-              fontSize: 11,
-              fontWeight: '300',
-              marginBottom: 20,
-            }}>
-            Fetching doctors..
-          </Text>
+        //   <Text
+        //     style={{
+        //       textAlign: 'center',
+        //       fontSize: 11,
+        //       fontWeight: '300',
+        //       marginBottom: 20,
+        //     }}>
+        //     Fetching doctors..
+        //   </Text>
+        <ActivityIndicator size="large" color="#000" />
         )}
         {(!doctors.loading && doctors.doctors.length <= 0) && (
           <Text
@@ -240,6 +232,7 @@ class Section extends PureComponent {
         </View>
         <View style={section.doc_container}>
           <FlatList
+            initialNumToRender = "3"
             data={this.props.data}
             renderItem={(item, index) => {
               console.log(item.index);

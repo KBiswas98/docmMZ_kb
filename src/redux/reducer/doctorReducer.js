@@ -1,7 +1,9 @@
 const initialState = {
     doctors : [],
     loading : false,
-    error: []
+    error: [],
+    tmp: null,
+    tmpLoading: true,
 }
 
 const DoctorReducer = (state = initialState, action) => {
@@ -17,7 +19,8 @@ const DoctorReducer = (state = initialState, action) => {
         case 'GETTING_DOCTORS': 
             return {
                 ...state,
-                loading : true
+                loading : true,
+                tmpLoading: true
             }
         case 'ERROR': 
             return {
@@ -25,9 +28,25 @@ const DoctorReducer = (state = initialState, action) => {
                 error : action.error,
                 loading : false
             }
+        case 'TMP_DOC_STORE': 
+            return {
+                ...state,
+                tmp: action.payload,
+                tmpLoading: false
+            }
+        case 'RESET_DOCTOR':
+            return {
+                ...state,
+                error: [],
+                loading: false,
+                doctors: [],
+                tmp: null,
+                tmpLoading: false
+            }
         default: 
             return state
     }
 }
+
 
 export default DoctorReducer

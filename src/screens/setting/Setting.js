@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {
   TouchableOpacity,
   StyleSheet,
-  AsyncStorage,
   SafeAreaView,
   ScrollView,
 } from 'react-native';
@@ -11,59 +10,31 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {View, Text} from 'react-native-animatable';
 import {useDispatch, useSelector} from 'react-redux';
 import {color} from '../../config/styles/color';
+import {resetStore} from '../../redux/action/auth'
+import {gettingQuestion} from '../../redux/action/questionAction'
 
 const Setting = props => {
-  const states = useSelector(state => state.DataStoreReducer.data);
-  const [Loading, setLoading] = useState(true);
-  const [user, setUser] = useState({email: ''});
+  const dispatch = useDispatch()
+  const {isLogedin, isDoctor} = useSelector(state => state.AuthReducer)
+  const data = useSelector(state => state.AuthReducer);
 
-  const _getDataFromLocalStore = async () => {
-    await AsyncStorage.getItem('userData', (err, result) => {
-      console.log(result);
-      if (result === null || result === undefined) {
-        setUser({email: ''});
-      } else if (result.length > 2) {
-        setUser(JSON.parse(result) || {email: ''});
-      }
-      setLoading(false);
-    });
-  };
-
-    const _checkUser = async () => {
-    await AsyncStorage.getItem('userData', (err, result) => {
-      console.log('**********')
-      console.log(result);
-      if (result !== null) {
-        // props.navigation.navigate('Auth');
-        // setUser(result);
-        result = JSON.parse(result)
-        if(result.mode.localeCompare('doctor') === 0) props.navigation.navigate('Doctor');
-      }
-    });
-  };
 
   const _logout = async () => {
-    setUser({email: ''});
-    await AsyncStorage.clear(() => {
-      props.navigation.navigate('Home');
-    });
+      console.log('Logout>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    dispatch(resetStore())
   };
 
   useEffect(() => {
-    _checkUser()
-    _getDataFromLocalStore();
-    console.log(
-      '*************************************************************************',
-    );
-    console.log(states);
-    console.log(
-      '*************************************************************************',
-    );
-  }, [Loading]);
+    // dispatch(gettingQuestion())
 
-  return Loading ? (
-    <Text>Loading...</Text>
-  ) : (
+    console.log(data)
+
+    // isDoctor && props.navigation.navigate('Doctor')
+    console.log(` isDoctor: ${isDoctor} and isLogedin: ${isLogedin}`)
+
+  },[]);
+
+  return (
     <SafeAreaView
       style={{backgroundColor: color.background, display: 'flex', flex: 1}}
       animation="bounceInRight"
@@ -77,11 +48,11 @@ const Setting = props => {
             onPress={() => props.navigation.goBack(null)}
           />
         </View>
-        <Options nav={props} type={user.email.length > 2 ? 'show' : 'hide'} />
+        <Options nav={props} type={isLogedin? 'show' : 'hide'} />
         <Account
           logout={_logout}
           nav={props}
-          type={user.email.length > 2 ? 'logout' : 'none'}
+          type={isLogedin ? 'logout' : 'none'}
         />
       </ScrollView>
     </SafeAreaView>

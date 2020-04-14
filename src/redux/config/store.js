@@ -7,19 +7,24 @@ import allReducer from '../reducer';
 import MainNavigation from '../../config/routes/MainNavigation';
 import {persistStore, persistReducer} from 'redux-persist'
 import {PersistGate} from 'redux-persist/integration/react'
-// import AsyncStorage from '@react-native-community/async-storage'
-import autoMergeLevel12 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage'
 
 
 const persistConfig = {
-    key: 'root',
+    key: 'primary',
     storage: AsyncStorage,
+    whitelist: [
+        'AuthReducer',
+        "QuestionReducer"
+    ],
+    blacklist: [
+        'DoctorReducer'
+    ]
 }
 
 const pReducer = persistReducer(persistConfig, allReducer)
 
-const _store = createStore(pReducer, applyMiddleware(thunk, logger));
+const _store = createStore(pReducer, {},applyMiddleware(thunk, logger));
 const store = persistStore(_store)
 
 

@@ -5,10 +5,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  Switch,
 } from 'react-native';
 import {text, color} from '../../../config/styles/color';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Icons from 'react-native-vector-icons/Feather';
 
 const TopNavbar2 = (props) => {
   useEffect(() => {
@@ -25,12 +25,22 @@ const TopNavbar2 = (props) => {
           flex: 1,
           alignItems: 'center',
         }}>
-        <Icon
-          name="ios-arrow-round-back"
-          color={color.brand_color}
-          size={35}
-          onPress={() => props.nav.navigation.goBack(null)}
-        />
+            {
+                props.noback ?
+                    <Icons
+                        name={"home"}
+                        color={color.brand_color}
+                        size={30}
+                        onPress={() => props.nav.navigation.navigate('homeScreen')}
+                    />
+                    :
+                    <Icon
+                        name={"ios-arrow-round-back"}
+                        color={color.brand_color}
+                        size={35}
+                        onPress={() => props.nav.navigation.goBack(null)}
+                    />
+            }
 
         <TouchableOpacity
           onPress={() => props.nav.navigation.navigate('Setting')}>

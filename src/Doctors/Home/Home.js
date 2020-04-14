@@ -6,53 +6,24 @@ import {
   ScrollView,
   Image,
   Dimensions,
-  AsyncStorage,
 } from 'react-native';
 import BottomNavbar from '../../components/prefab/BottomNavbar.js/BottomNavbar';
 import DoctorTopNavbar from '../../components/prefab/TopNavbar/DoctorTopNavbar';
 import {color} from '../../config/styles/color';
 import {useDispatch, useSelector} from 'react-redux';
-import {addUserToRedux, addUserFullData} from '../../redux/action/auth';
-import {Host} from '../../config/settings/Connection'
-import axios from 'axios'
+
 
 const Home = (props) => {
   const dispatch = useDispatch();
-  var {width, height} = Dimensions.get('window');
-  const [isLoading, setLoading] = useState(true);
-  const data = useSelector((state) => state.AuthReducer.data);
+  const {data, isLogedin, isDoctor, isLoading } = useSelector((state) => state.AuthReducer);
 
-  const _fetchData =(_id) => {
-     axios.get(`${Host}/doctors/getdoc/${_id}`)
-     .then(result => {
-       console.log(result)
-       if(result.status) {
-         console.log(result.data.data)
-         dispatch(addUserFullData(result.data.data))
-       }
-     })
-     .catch( err => {
-       console.log(err)
-     })
-  }
+  var {width, height} = Dimensions.get('window');
 
   useEffect(() => {
-    _getDataFromLocalStore();
-    console.log(data) 
+      (!isDoctor || !isLogedin) && props.navigation.navigate('Home')
+      console.log(` isDoctor: ${isDoctor} and isLogedin: ${isLogedin}`)
   },[]);
 
-  const _getDataFromLocalStore = async () => {
-    await AsyncStorage.getItem('userData', (err, result) => {
-      console.log(result);
-      if (result === null || result === undefined) {
-        props.navigation.navigate('Home');
-      } else if (result.length > 2) {
-        _fetchData(JSON.parse(result).id)
-        dispatch(addUserToRedux(result));
-      }
-      setLoading(false);
-    });
-  };
 
   return isLoading ? (
     <Text>Loading..</Text>
@@ -98,7 +69,7 @@ const Home = (props) => {
                 fontWeight: 'bold',
                 letterSpacing: 1,
               }}>
-              {JSON.parse(data).name}
+              {data.first_name}
             </Text>
             <Text
               style={{

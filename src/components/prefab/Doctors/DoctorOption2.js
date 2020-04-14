@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import Avater from '../../primitive/Avater/Avater';
 import Tag from '../../primitive/Tag/Tag';
@@ -7,30 +7,16 @@ import Star from '../Stars/Star';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {createAnimatableComponent, View, Text} from 'react-native-animatable';
 
-const mySchedule = [
-  {
-    time: '10:30',
-    available: true,
-  },
-  {
-    time: '10:40',
-    available: false,
-  },
-  {
-    time: '10:50',
-    available: false,
-  },
-];
-
 const DoctorOption2 = (props) => {
+    const [visible, setVisible] = useState(true)
   useEffect(() => {
     // console.log('------***-----------------')
     // console.log(props)
     // console.log('------***-----------------')
-  });
+  },[]);
   return (
     <View
-      style={[doctor.samll_card, doctor.shadow]}
+      style={[doctor.samll_card, doctor.shadow, visible ? {opacity: 1}: {opacity: 0}]}
       animation="bounceInRight"
       duration={3000}
       delay={1000}>
@@ -77,7 +63,7 @@ const DoctorOption2 = (props) => {
         </View>
         <View>
           <TouchableOpacity
-            onPress={() => props.removeEvent(props.id)}
+            onPress={() => {setVisible(false); props.removeEvent(props.id)}}
             style={doctor.button}>
             <Icon name="remove" color={color.white_color} size={30} />
           </TouchableOpacity>

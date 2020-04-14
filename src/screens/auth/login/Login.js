@@ -17,11 +17,15 @@ import {_checkLogin, _saveDataToStorage} from '../../../config/common/Storage';
 import {color} from '../../../config/styles/color';
 import Button from '../../../components/primitive/Button/Button';
 import Switch from '../../../components/primitive/Switch/Switch';
+import {LoginDoctor, LoginPatient} from '../../../redux/action/auth'
+import { useDispatch } from 'react-redux';
+import {_LoginPatient} from '../../../redux/action/authAction'
 
 const Login = (props) => {
   const [data, setData] = useState({email: '', password: ''});
   const [loading, setLoading] = useState(true);
   const [isDoctor, setDoctor] = useState(false);
+  const dispatch = useDispatch()
 
   useEffect(() => {
     setLoading(false);
@@ -36,81 +40,31 @@ const Login = (props) => {
     setData({...data, password: e});
   };
 
-  const _save = async (userData) => {
-    await AsyncStorage.setItem('userData', JSON.stringify(userData), () => {
-      isDoctor
-        ? props.navigation.navigate('Doctor')
-        : props.navigation.navigate('Home');
-    });
-  };
-
   const handelLoginMode = () => {
     console.log('click~');
     setDoctor(!isDoctor);
   };
 
+  const successCallback = (successResponce) => {
+        console.log(`PatientLoginAction(success):  ${successResponce.message}`)
+        isDoctor
+         ?
+         props.navigation.navigate('Doctor') :
+         props.navigation.navigate('Home');
+  }
+
+  const errorCallback= (faildResponce) => {
+    console.log(`PatientLoginAction(error):  ${faildResponce.message}`)
+  }
+
   const _handelPatientLogin = () => {
     console.log(data);
-
-    const config = {
-      'Content-Type': 'application/json',
-    };
-
-    axios
-      .post(`${Host}/patient/authenticate`, data, config)
-      .then((result) => {
-        // result = JSON.parse(result)
-        console.log(result.data.status);
-        if (result.data.status) {
-          const data = result.data.user;
-          const __data = {
-            mode: 'patient',
-            email: data.email,
-            name: data.name,
-            id: data._id,
-          };
-          _save(__data);
-        }
-        console.log(result);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    dispatch(LoginPatient(data, successCallback, errorCallback))
   };
 
   const _handelDoctorLogin = () => {
-    console.log('Doctor');
     console.log(data);
-
-    const config = {
-      'Content-Type': 'application/json',
-    };
-
-    const _data = {
-      email: data.email,
-      password: data.password,
-    };
-
-    axios
-      .post(`${Host}/doctors/authenticate`, data, config)
-      .then((result) => {
-        console.log(result);
-        if (result.data.status) {
-          const data = result.data.user;
-          const __data = {
-            mode: 'doctor',
-            email: data.email,
-            name: data.basic.name,
-            phone: data.basic.phone,
-            id: data._id,
-          };
-          _save(__data);
-        }
-        console.log(result);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    dispatch(LoginDoctor(data, successCallback, errorCallback))
   };
 
   return loading ? (

@@ -12,14 +12,20 @@ import BottomNavbar from '../../components/prefab/BottomNavbar.js/BottomNavbar';
 import DoctorTopNavbar from '../../components/prefab/TopNavbar/DoctorTopNavbar';
 import {color} from '../../config/styles/color';
 import Icon from 'react-native-vector-icons/Feather';
+import {resetStore} from '../../redux/action/auth'
+import { useDispatch } from 'react-redux';
 
-const _logout = async (props) => {
-  await AsyncStorage.clear(() => {
-    props.navigation.navigate('Home');
-  });
-};
+
 
 const Setting = (props) => {
+
+    const dispatch = useDispatch()
+
+    const _logout = async() => {
+        dispatch(resetStore())
+        props.navigation.navigate('Home')
+    };
+
   return (
     <SafeAreaView
       style={{

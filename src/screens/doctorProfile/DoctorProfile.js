@@ -8,7 +8,7 @@ import {
   Image,
   ScrollView,
   SafeAreaView,
-  AsyncStorage,
+  ActivityIndicator,
 } from 'react-native';
 import {text, color} from '../../config/styles/color';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -21,28 +21,26 @@ import {LabaledInput} from '../../components/primitive/Input/Input';
 import Button from '../../components/primitive/Button/Button';
 import {useSelector, useDispatch} from 'react-redux';
 import {addScheduleToRedux} from '../../redux/action/schedule';
-import NavigationActions from 'react-navigation/src/NavigationActions';
 
 const DoctorProfile = props => {
-  const [data, setData] = useState();
+  const [myData, setData] = useState();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState();
   const [inputs, setInputs] = useState({
     name: 'no Name',
     reason: '',
     contact: '',
   });
+
+  const { data , isLogedin} = useSelector(state => state.AuthReducer)
   const scheduleData = useSelector(state => state.ScheduleReducer.data);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('from redux');
-    console.log(scheduleData);
-
-    _getDataFromLocalStore();
-
+    // console.log('from redux');
+    // console.log(scheduleData);
     const _id = props.navigation.state.params.id;
     console.log(_id);
+
     const _getData = __id => {
       axios
         .get(`${Host}/doctors/getdoc/${__id}`)
@@ -71,24 +69,21 @@ const DoctorProfile = props => {
     _getData(_id);
   }, [loading]);
 
-  const _getDataFromLocalStore = async () => {
-    await AsyncStorage.getItem('userData', (err, result) => {
-      // console.log(result);
-      if (result === null || result === undefined) {
-        props.navigation.navigate('Auth');
-      }
-      setUser(result);
-    });
-  };
 
   const onSubmit = () => {
-    console.log(JSON.parse(user).id);
+    if(!isLogedin){
+         props.navigation.navigate('Auth');
+         return;
+    }
+
+    props.navigation.navigate('questionnaire');
+    return;
 
     const _data = {
-      patient: JSON.parse(user).id,
+      patient: data.id,
       transactionId: '0000',
       timeSlot: scheduleData.id,
-      practise: data._id,
+      practise: props.navigation.state.params.id
     };
 
     const config = {
@@ -105,7 +100,7 @@ const DoctorProfile = props => {
           name: inputs.name,
           time: scheduleData.time,
           date: scheduleData.date,
-          doctorName: data.basic.name
+          doctorName: myData.basic.name
         })
       })
       .catch(err => {
@@ -118,7 +113,7 @@ const DoctorProfile = props => {
   };
 
   return loading ? (
-    <Loading />
+     <ActivityIndicator size="large" color="#000" style={{ display: 'flex', flex: 1, justifyContent: "center", alignItems: "center"}}/> 
   ) : (
     <SafeAreaView style={{backgroundColor: color.background}}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -127,12 +122,12 @@ const DoctorProfile = props => {
             <TopNavbar nav={props} mode={true} />
           </View>
           <View style={doctorprofile.details}>
-            <ProfileBox nav={props} data={data} />
+            <ProfileBox nav={props} data={myData} />
           </View>
           <View>
             <SortSchedule
               nav={props}
-              data={data}
+              data={myData}
               schedule={scheduleData}
               changeDateTime={changeTimeAndDate}
               input={inputs}
@@ -199,6 +194,7 @@ const doctorprofile = StyleSheet.create({
 });
 
 const SortSchedule = props => {
+    
   return (
     <View style={sortschedule.container}>
       <View

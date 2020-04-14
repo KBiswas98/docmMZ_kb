@@ -3,17 +3,17 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
   SafeAreaView,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
-import {text, color} from '../../../config/styles/color';
+import { color} from '../../../config/styles/color';
 import {ParalaxCard} from '../../primitive/Cards/Card';
 import Button from '../../primitive/Button/Button';
 import Icon from 'react-native-vector-icons/Ionicons';
-import axios from 'axios';
-import {Host} from '../../../config/settings/Connection';
 import TopNavbar from '../TopNavbar/TopNavbar';
+import { useSelector, useDispatch } from 'react-redux';
+import { GettingDoctorProfiles } from '../../../redux/action/doctoreAction';
 
 const DATA = {
   about: [
@@ -38,36 +38,15 @@ const DATA = {
 };
 
 const DoctorProfile2 = props => {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState();
+    const {tmpLoading, tmp} = useSelector(state => state.DoctorReducer)
+    const dispatch = useDispatch()
 
   useEffect(() => {
-    console.log('-----------useEffect----------------');
-    const _id = props.navigation.state.params.id;
-    console.log(_id);
-    const _getData = __id => {
-      console.log('get data>>>>>>>>>>>>>>>>>>>')
-      axios
-        .get(`${Host}/doctors/getdoc/${__id}`)
-        .then(result => {
-          if (result.status) {
-            // console.log('--------------------------------------------------');
-            // console.log(result.data.data);
-            // console.log('--------------------------------------------------');
-            setData(result.data.data);
-            setLoading(false);
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    };
-
-    _getData(_id);
+    dispatch(GettingDoctorProfiles(props.navigation.state.params.id))
   }, []);
 
-  return loading ? (
-    <Text>Loading...</Text>
+  return tmpLoading ? (
+     <ActivityIndicator size="large" color="#000" style={{ display: 'flex', flex: 1, justifyContent: "center", alignItems: "center"}}/> 
   ) : (
     <SafeAreaView style={{marginHorizontal: -10, backgroundColor: color.background}}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -75,10 +54,10 @@ const DoctorProfile2 = props => {
           <TopNavbar nav={props} mode={true} />
         </View>
         <View style={{marginTop: -150}}>
-          <ParalaxCard data={data} />
+          <ParalaxCard data={tmp} />
         </View>
         <View style={doctorprofile.detail_container}>
-          <Details nav={props} data={data} />
+          <Details nav={props} data={tmp} />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -92,12 +71,8 @@ const doctorprofile = StyleSheet.create({
 });
 
 const Details = props => {
-  const bookASchedule = () => {
-    console.log('submit');
-  };
 
   useEffect(() => {
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
     console.log(props.data);
   });
 

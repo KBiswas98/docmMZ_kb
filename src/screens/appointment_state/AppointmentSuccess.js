@@ -22,7 +22,7 @@ const AppointmentSuccess = (props) => {
     <SafeAreaView
       style={{backgroundColor: color.background, display: 'flex', flex: 1}}>
       <ScrollView>
-        <TopNavbar2 nav={props}/>
+        <TopNavbar2 nav={props} noback={true}/>
         <View
           style={{
             display: 'flex',

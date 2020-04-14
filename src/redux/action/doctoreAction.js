@@ -6,6 +6,8 @@ import {
 const GET_DOCTORS = 'GET_DOCTORS';
 const GETTING_DOCTORS = 'GETTING_DOCTORS';
 const ERROR = 'ERROR';
+const RESET_DOCTOR = 'RESET_DOCTOR'
+const TMP_DOC_STORE = 'TMP_DOC_STORE';
 
 const setDoctors = (doctors, searchable) => {
     return {
@@ -15,7 +17,7 @@ const setDoctors = (doctors, searchable) => {
     };
 };
 
-const gettingDoctors = () => {
+const startDoctorLoading = () => {
     return {
         type: GETTING_DOCTORS,
     };
@@ -28,9 +30,22 @@ const haveingError = error => {
     };
 };
 
+const tempDocStore = (data) => {
+    return {
+        type: TMP_DOC_STORE,
+        payload: data
+    }
+}
+
+export const resetDoctor = () => {
+    return {
+        type: RESET_DOCTOR
+    }
+}
+
 export const fetchDoctors = () => {
     return async dispatch => {
-        await dispatch(gettingDoctors());
+        await dispatch(startDoctorLoading());
         await axios
             .get('https://jsonplaceholder.typicode.com/comments')
             .then(response => {
@@ -55,7 +70,7 @@ export const fetchDoctorLite = (search, _page, mode) => {
             name: search.toString().split(' ')[0],
         };
 
-        dispatch(gettingDoctors());
+        dispatch(startDoctorLoading());
         let searchable = search.length !== 0
         console.log(searchable)
 
@@ -63,7 +78,7 @@ export const fetchDoctorLite = (search, _page, mode) => {
             .then(result => {
                 if (result.status) {
                     console.log(result.data.data)
-                    dispatch(setDoctors(result.data.data,searchable))
+                    dispatch(setDoctors(result.data.data, searchable))
                 }
             })
             .catch(err => {
@@ -71,3 +86,19 @@ export const fetchDoctorLite = (search, _page, mode) => {
             });
     };
 };
+
+export const GettingDoctorProfiles = (id) => {
+    return dispatch => {
+        dispatch(startDoctorLoading())
+        axios
+            .get(`${Host}/doctors/getdoc/${id}`)
+            .then(result => {
+                if (result.status) {
+                    dispatch(tempDocStore(result.data.data))
+                }
+            })
+            .catch(err => {
+                dispatch(haveingError(err))
+            });
+    }
+}
