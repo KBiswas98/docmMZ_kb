@@ -31,13 +31,15 @@ const DoctorProfile = props => {
     contact: '',
   });
 
-  const { data , isLogedin} = useSelector(state => state.AuthReducer)
+  const {done} = useSelector(state => state.QuestionReducer);
+  const {data, isLogedin} = useSelector(state => state.AuthReducer);
   const scheduleData = useSelector(state => state.ScheduleReducer.data);
   const dispatch = useDispatch();
 
   useEffect(() => {
     // console.log('from redux');
     // console.log(scheduleData);
+    done && booking();
     const _id = props.navigation.state.params.id;
     console.log(_id);
 
@@ -67,23 +69,24 @@ const DoctorProfile = props => {
     };
 
     _getData(_id);
-  }, [loading]);
-
+  }, [loading, done]);
 
   const onSubmit = () => {
-    if(!isLogedin){
-         props.navigation.navigate('Auth');
-         return;
+    if (!isLogedin) {
+      props.navigation.navigate('Auth');
+      return;
     }
 
     props.navigation.navigate('questionnaire');
     return;
+  };
 
+  const booking = () => {
     const _data = {
       patient: data.id,
       transactionId: '0000',
       timeSlot: scheduleData.id,
-      practise: props.navigation.state.params.id
+      practise: props.navigation.state.params.id,
     };
 
     const config = {
@@ -91,7 +94,7 @@ const DoctorProfile = props => {
     };
 
     console.log(_data);
-
+    setLoading(true);
     axios
       .post(`${Host}/appointment/book`, _data, config)
       .then(result => {
@@ -100,11 +103,13 @@ const DoctorProfile = props => {
           name: inputs.name,
           time: scheduleData.time,
           date: scheduleData.date,
-          doctorName: myData.basic.name
-        })
+          doctorName: myData.basic.name,
+        });
+        setLoading(false);
       })
       .catch(err => {
         console.log(err);
+        setLoading(false);
       });
   };
 
@@ -113,7 +118,16 @@ const DoctorProfile = props => {
   };
 
   return loading ? (
-     <ActivityIndicator size="large" color="#000" style={{ display: 'flex', flex: 1, justifyContent: "center", alignItems: "center"}}/> 
+    <ActivityIndicator
+      size="large"
+      color="#000"
+      style={{
+        display: 'flex',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    />
   ) : (
     <SafeAreaView style={{backgroundColor: color.background}}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -194,7 +208,6 @@ const doctorprofile = StyleSheet.create({
 });
 
 const SortSchedule = props => {
-    
   return (
     <View style={sortschedule.container}>
       <View

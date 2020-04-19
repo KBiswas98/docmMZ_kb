@@ -39,11 +39,11 @@ const HomePageNavigation = createStackNavigator(
     scheduleScreen: Schedule,
     scheduleScreen2: Schedule2,
     appointmentSuccess: AppointmentSuccess,
-    questionnaire: Questionnaire
+    questionnaire: Questionnaire,
   },
   {
     initialRouteName: 'homeScreen',
-    headerMode: 'none'
+    headerMode: 'none',
   },
 );
 

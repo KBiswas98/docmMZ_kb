@@ -8,16 +8,16 @@ import MainNavigation from '../../config/routes/MainNavigation';
 import {persistStore, persistReducer} from 'redux-persist'
 import {PersistGate} from 'redux-persist/integration/react'
 import AsyncStorage from '@react-native-community/async-storage'
-
+import Loading from '../../screens/loading/Loading'
 
 const persistConfig = {
     key: 'primary',
     storage: AsyncStorage,
     whitelist: [
         'AuthReducer',
-        "QuestionReducer"
     ],
     blacklist: [
+        "QuestionReducer",
         'DoctorReducer'
     ]
 }
@@ -31,7 +31,7 @@ const store = persistStore(_store)
 export default function Store() {
   return (
     <Provider store={ _store}>
-        <PersistGate loading={null} persistor={store}>
+        <PersistGate loading={Loading} persistor={store}>
             <MainNavigation />
         </PersistGate>
     </Provider>

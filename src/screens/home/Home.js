@@ -13,7 +13,6 @@ import Catagory from '../../components/prefab/Catagory/Catagory';
 import DoctorOption from '../../components/prefab/Doctors/DoctorOption';
 import {_checkLogin, _saveDataToStorage} from '../../config/common/Storage';
 import {SearchBox} from '../../components/primitive/Input/Input';
-import Loading from '../../screens/loading/Loading';
 import TopNavBar from '../../components/prefab/TopNavbar/TopNavbar';
 import {useSelector, useDispatch} from 'react-redux';
 import Switch from '../../components/primitive/Switch/Switch';
@@ -188,7 +187,7 @@ const Home = props => {
         //     }}>
         //     Fetching doctors..
         //   </Text>
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color={color.brand_color} />
         )}
         {(!doctors.loading && doctors.doctors.length <= 0) && (
           <Text
