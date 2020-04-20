@@ -5,7 +5,8 @@ import Setting from '../../Doctors/setting/Setting'
 import Schedule from '../../Doctors/schedule/Schedule'
 import Chat from '../../Doctors/Chat/Chat';
 import Profile from '../../Doctors/Profile/Profile'
-
+import DoctorQuestionnaire from '../../Doctors/Questionnaire/DoctorQuestionnaire'
+import AllQuestion from '../../Doctors/Questionnaire/AllQuestions'
 
 const DoctorNavigation = createSwitchNavigator(
   {
@@ -13,11 +14,13 @@ const DoctorNavigation = createSwitchNavigator(
     settingScreen: Setting,
     scheduleScreen: Schedule,
     chatScreen: Chat,
-    profileScreen: Profile
+    profileScreen: Profile,
+    doctorQuestion: DoctorQuestionnaire,
+    allQuestion: AllQuestion,
   },
   {
-    initialRouteName: 'homeScreen',
-    headerMode: 'none'
+    initialRouteName: 'doctorQuestion',
+    headerMode: 'none',
   },
 );
 
