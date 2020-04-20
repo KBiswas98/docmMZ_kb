@@ -3,8 +3,6 @@ import React, {
   useState,
   useRef,
   useImperativeHandle,
-  forwardRef,
-  createRef,
   useContext,
 } from 'react';
 import {
@@ -23,35 +21,38 @@ import Button from '../../components/primitive/Button/Button';
 
 const MyLinking = React.createContext();
 const DoctorQuestionnaire = () => {
-  const ansRef = useRef(null);
-  const questionRef = useRef(null);
   const [isVisible, setVisible] = useState(false);
+  const [more, setMore] = useState([]);
+  const [questionCount, setQuestionCount] = useState(1);
 
   const submitTheForm = () => {
     console.log('From DoctorQuestionnarie.');
     setVisible(true);
   };
 
+  const addNewQuestion = () => {
+    setQuestionCount(questionCount + 1);
+    setMore([more, <QuestionModule path={questionCount + 1 + '/'} key={questionCount + 1}/>]);
+  };
+
   return (
     <SafeAreaView style={{backgroundColor: color.background, flex: 1}}>
       <DoctorTopNavbar />
       <ScrollView style={{flex: 1, display: 'flex'}}>
-        <ScrollView horizontal={true}>
+        <ScrollView horizontal={true} style={{ minHeight: 400}}>
           <MyLinking.Provider value={isVisible}>
-            <QuestionModule path="/" />
+            <QuestionModule path={`${questionCount}/`} />
+            {more}
           </MyLinking.Provider>
         </ScrollView>
         <View style={styles.action_controller}>
           <Button
-            style={styles.buttons}
+            style={[styles.buttons]}
             deafult={true}
-            title={'SKIP'}
+            title={'+'}
             t_text={true}
             onlyBorder
-            onClick={() =>
-              //       /*incrementQuestionNumber()*/ decrementQuestionNumber()
-              console.log('click on skip')
-            }
+            onClick={() => addNewQuestion()}
           />
           <Button
             style={styles.buttons}
@@ -96,14 +97,14 @@ const QuestionModule = props => {
 
   const flag = useContext(MyLinking);
   useEffect(() => {
-     if (flag) {
-       const obj = {
-         path: props.path,
-         question_type: 'option',
-         question: my,
-       };
-       console.log(obj);
-     }
+    if (flag) {
+      const obj = {
+        path: props.path,
+        question_type: 'option',
+        question: my,
+      };
+      console.log(obj);
+    }
   }, [flag]);
 
   const selectHeldelar = (ans, index) => {
@@ -295,9 +296,9 @@ const MultipleOption = props => {
   );
 };
 
-const InputBox = (props) => {
+const InputBox = props => {
   const [my, setMy] = useState('nothing');
-  
+
   const flag = useContext(MyLinking);
 
   useEffect(() => {
