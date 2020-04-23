@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'flex-end',
     marginVertical: 40,
+    
   },
   buttons: {
     height: 40,

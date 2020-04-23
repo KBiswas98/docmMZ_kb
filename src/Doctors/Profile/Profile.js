@@ -33,6 +33,7 @@ const Profile = props => {
           horizontal={true}
           style={{flex: 1, height: 800}}>
           <QuestionCard nav={props} />
+          <QuestionCard nav={props} add={true} />
           {/* <QuestionCard nav={props} />
           <QuestionCard nav={props} />
           <QuestionCard nav={props} />
@@ -61,9 +62,9 @@ const QuestionCard = props => {
   },[]);
   return (
     <TouchableOpacity
-      onPress={() => props.nav.navigation.navigate('doctorQuestion')}
+      onPress={() => props.add ? props.nav.navigation.navigate('doctorQuestion') : props.nav.navigation.navigate('allQuestion') }
       style={[styles.wrapper, { top: loc}]}>
-      <Text style={styles.text}>{'option x'}</Text>
+      <Text style={[styles.text, props.add && { fontSize: 50}]}>{props.add ? '+' : 'option x'}</Text>
     </TouchableOpacity>
   );
 };
