@@ -17,7 +17,11 @@ import TopNavBar from '../../components/prefab/TopNavbar/TopNavbar';
 import {useSelector, useDispatch} from 'react-redux';
 import Switch from '../../components/primitive/Switch/Switch';
 import TButton from '../../components/prefab/Buttons/TButton';
-import {fetchDoctors, fetchDoctorLite, searchDoctorLite} from '../../redux/action/doctoreAction'
+import {
+  fetchDoctors,
+  fetchDoctorLite,
+  searchDoctorLite,
+} from '../../redux/action/doctoreAction';
 
 const getRecent3 = output => {
   const s = new Date();
@@ -52,20 +56,17 @@ const Home = props => {
   const [mode, setMode] = useState(false);
   const [section, setSection] = useState('Top Doctors');
   const [page, setPage] = useState(0);
-  const [searchPageIndex, setSearchPageIndex] = useState(0)
-  
+  const [searchPageIndex, setSearchPageIndex] = useState(0);
+
   const doctors = useSelector(state => state.DoctorReducer);
-  const {isLogedin, isDoctor} = useSelector(state => state.AuthReducer)
+  const {isLogedin, isDoctor} = useSelector(state => state.AuthReducer);
   var tougl = false;
 
-
-
   useEffect(() => {
-    (isDoctor && isLogedin) && props.navigation.navigate('Doctor')
-    console.log(` isDoctor: ${isDoctor} and isLogedin: ${isLogedin}`)
+    isDoctor && isLogedin && props.navigation.navigate('Doctor');
+    console.log(` isDoctor: ${isDoctor} and isLogedin: ${isLogedin}`);
 
-    enableSomeButton()
-
+    enableSomeButton();
   }, []);
 
   const handelSearchInput = _text => {
@@ -78,9 +79,9 @@ const Home = props => {
   };
 
   const handelMode = () => {
-      enableSomeButton()
+    enableSomeButton();
     setMode(!mode);
-    tougl = !tougl
+    tougl = !tougl;
   };
 
   const _fetch = () => {
@@ -88,12 +89,11 @@ const Home = props => {
   };
 
   function enableSomeButton() {
-
-    let page_index = search.length === 0 ? page : searchPageIndex
-    dispatch(fetchDoctorLite(search,page_index,mode))
-    search.length === 0 ? setPage(page + 1) : setSearchPageIndex(searchPageIndex)
-
-    
+    let page_index = search.length === 0 ? page : searchPageIndex;
+    dispatch(fetchDoctorLite(search, page_index, mode));
+    search.length === 0
+      ? setPage(page + 1)
+      : setSearchPageIndex(searchPageIndex);
   }
 
   const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
@@ -104,7 +104,8 @@ const Home = props => {
     );
   };
 
-  return <SafeAreaView
+  return (
+    <SafeAreaView
       style={{backgroundColor: color.background, display: 'flex', flex: 1}}>
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -175,21 +176,26 @@ const Home = props => {
         </View>
 
         <View>
-          <Section name={section} data={doctors.doctors} nav={props} fetch={_fetch} />
+          <Section
+            name={section}
+            data={doctors.doctors}
+            nav={props}
+            fetch={_fetch}
+          />
         </View>
-        {(doctors.loading) && (
-        //   <Text
-        //     style={{
-        //       textAlign: 'center',
-        //       fontSize: 11,
-        //       fontWeight: '300',
-        //       marginBottom: 20,
-        //     }}>
-        //     Fetching doctors..
-        //   </Text>
-        <ActivityIndicator size="large" color={color.brand_color} />
+        {doctors.loading && (
+          //   <Text
+          //     style={{
+          //       textAlign: 'center',
+          //       fontSize: 11,
+          //       fontWeight: '300',
+          //       marginBottom: 20,
+          //     }}>
+          //     Fetching doctors..
+          //   </Text>
+          <ActivityIndicator size="large" color={color.brand_color} />
         )}
-        {(!doctors.loading && doctors.doctors.length <= 0) && (
+        {!doctors.loading && doctors.doctors.length <= 0 && (
           <Text
             style={{
               textAlign: 'center',
@@ -202,7 +208,7 @@ const Home = props => {
         )}
       </ScrollView>
     </SafeAreaView>
-  
+  );
 };
 
 const home_styles = StyleSheet.create({
@@ -231,7 +237,7 @@ class Section extends PureComponent {
         </View>
         <View style={section.doc_container}>
           <FlatList
-            initialNumToRender = "3"
+            initialNumToRender="3"
             data={this.props.data}
             renderItem={(item, index) => {
               console.log(item.index);
@@ -276,4 +282,4 @@ const section = StyleSheet.create({
   },
 });
 
-export default React.memo(Home);
+export default Home;

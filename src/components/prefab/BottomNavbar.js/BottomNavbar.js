@@ -5,7 +5,7 @@ import {color} from '../../../config/styles/color';
 
 const IconSize = 22;
 
-const BottomNavbar = (props) => {
+const BottomNavbar = props => {
   return (
     <View style={bottomnavbar.container}>
       <Icon

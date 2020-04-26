@@ -7,19 +7,18 @@ import Search from '../../screens/search/Search';
 import Schedule from '../../screens/Schedule/Schedule';
 import Schedule2 from '../../screens/Schedule/Schedule2';
 import DoctorSlider from '../../screens/doctorSlide/DoctorSlide';
-import DoctorProfile2 from '../../components/prefab/DoctorProfile/DoctorProfile2'
-import AppointmentSuccess from '../../screens/appointment_state/AppointmentSuccess'
-import Questionnaire from '../../screens/questionnaire/Questionnaire'
+import DoctorProfile2 from '../../components/prefab/DoctorProfile/DoctorProfile2';
+import AppointmentSuccess from '../../screens/appointment_state/AppointmentSuccess';
+import Questionnaire from '../../screens/questionnaire/Questionnaire';
 import Setting from '../../screens/setting/Setting';
-import PatientProfile from '../../screens/patientProfile/PatientProfile'
-import Appointment from '../../screens/appointment/Appointment'
-
+import PatientProfile from '../../screens/patientProfile/PatientProfile';
+import Appointment from '../../screens/appointment/Appointment';
 
 const SettingNavigation = createStackNavigator(
   {
     Setting: Setting,
     PatientProfile: PatientProfile,
-    Appointment: Appointment
+    Appointment: Appointment,
   },
   {
     headerMode: 'none',

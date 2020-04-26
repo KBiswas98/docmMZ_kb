@@ -40,6 +40,8 @@ target 'docMz_kb' do
 
   pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
 
+  pod 'RNSVG', :path => '../node_modules/react-native-svg'
+
   target 'docMz_kbTests' do
     inherit! :search_paths
     # Pods for testing

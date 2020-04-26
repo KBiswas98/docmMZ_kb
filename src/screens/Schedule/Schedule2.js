@@ -118,4 +118,4 @@ const Option = props => {
   );
 };
 
-export default React.memo(Schedule2);
+export default Schedule2;

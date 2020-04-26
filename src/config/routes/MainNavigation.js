@@ -13,8 +13,8 @@ import SettingNavigation from './SettingNavigation';
 import NavigationActions from 'react-navigation/src/NavigationActions';
 import DoctorNavigation from './DoctorNavigaton';
 
-import Login from '../../screens/auth/Login/Login';
-import SignUp from '../../screens/auth/SignUp/SignUp';
+import Login from '../../screens/auth/login/Login';
+import SignUp from '../../screens/auth/signup/Signup';
 
 const AuthNavigation = createStackNavigator(
   {
@@ -33,7 +33,7 @@ const DisplayMode = createSwitchNavigator(
     Doctor: DoctorNavigation,
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: 'Doctor',
     headerMode: 'none',
   },
 );

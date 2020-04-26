@@ -29,9 +29,7 @@ const Profile = props => {
       }}>
       <ScrollView style={{flex: 1}}>
         <DoctorTopNavbar />
-        <ScrollView
-          horizontal={true}
-          style={{flex: 1, height: 800}}>
+        <ScrollView horizontal={true} style={{flex: 1, height: 800}}>
           <QuestionCard nav={props} />
           <QuestionCard nav={props} add={true} />
           {/* <QuestionCard nav={props} />
@@ -59,12 +57,18 @@ const QuestionCard = props => {
   const [loc, setloc] = useState(0);
   useEffect(() => {
     setloc(Math.floor(Math.random() * 700));
-  },[]);
+  }, []);
   return (
     <TouchableOpacity
-      onPress={() => props.add ? props.nav.navigation.navigate('doctorQuestion') : props.nav.navigation.navigate('allQuestion') }
-      style={[styles.wrapper, { top: loc}]}>
-      <Text style={[styles.text, props.add && { fontSize: 50}]}>{props.add ? '+' : 'option x'}</Text>
+      onPress={() =>
+        props.add
+          ? props.nav.navigation.navigate('doctorQuestion')
+          : props.nav.navigation.navigate('allQuestion')
+      }
+      style={[styles.wrapper, {top: loc}]}>
+      <Text style={[styles.text, props.add && {fontSize: 50}]}>
+        {props.add ? '+' : 'option x'}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -88,4 +92,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(Profile);
+export default Profile;

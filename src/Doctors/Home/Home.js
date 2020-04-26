@@ -12,18 +12,18 @@ import DoctorTopNavbar from '../../components/prefab/TopNavbar/DoctorTopNavbar';
 import {color} from '../../config/styles/color';
 import {useDispatch, useSelector} from 'react-redux';
 
-
-const Home = (props) => {
+const Home = props => {
   const dispatch = useDispatch();
-  const {data, isLogedin, isDoctor, isLoading } = useSelector((state) => state.AuthReducer);
+  const {data, isLogedin, isDoctor, isLoading} = useSelector(
+    state => state.AuthReducer,
+  );
 
   var {width, height} = Dimensions.get('window');
 
   useEffect(() => {
-      (!isDoctor || !isLogedin) && props.navigation.navigate('Home')
-      console.log(` isDoctor: ${isDoctor} and isLogedin: ${isLogedin}`)
-  },[]);
-
+    (!isDoctor || !isLogedin) && props.navigation.navigate('Home');
+    console.log(` isDoctor: ${isDoctor} and isLogedin: ${isLogedin}`);
+  }, []);
 
   return isLoading ? (
     <Text>Loading..</Text>
@@ -104,7 +104,7 @@ const Home = (props) => {
   );
 };
 
-const RecentMeeting = (props) => {
+const RecentMeeting = props => {
   return (
     <View
       style={{
@@ -139,4 +139,4 @@ const RecentMeeting = (props) => {
   );
 };
 
-export default React.memo(Home);
+export default Home;
